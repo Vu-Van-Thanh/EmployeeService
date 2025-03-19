@@ -1,6 +1,7 @@
 ﻿using EmployeeService.Core.RepositoryContracts;
 using EmployeeService.Core.Services;
 using EmployeeService.Infrastructure.AppDbContext;
+using EmployeeService.Infrastructure.MessageBroker;
 using EmployeeService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -21,8 +22,8 @@ namespace EmployeeServiceRegistry
             // thêm service
             services.AddScoped<IEmployeeService, EmployeeServices>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-           
 
+            services.AddSingleton<KafkaProducerService>();
 
             // cấu hình swagger
             services.AddEndpointsApiExplorer();

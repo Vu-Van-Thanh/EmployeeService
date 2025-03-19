@@ -8,5 +8,6 @@ namespace EmployeeService.Core.DTO
 {
     public class EmployeeUpdateResponse
     {
+        public string Result { get; set; }
     }
 }

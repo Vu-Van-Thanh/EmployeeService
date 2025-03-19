@@ -9,6 +9,11 @@ namespace EmployeeService.Core.RepositoryContracts
 {
     public interface IEmployeeRepository
     {
-        public Task<Employee> GetEmployeeById(Guid Id);
+        public Task<Employee?> GetEmployeeById(Guid Id);
+        public Task<Guid> UpdateEmployee(Employee employee);
+        Task<List<Employee>> GetAll();
+        Task<bool> AddEmployee(Employee employee);
+        Task<Employee?> GetEmployeeIdByUserId(Guid Id);
+        Task<bool> DeleteEmployee(Guid employeeId);
     }
 }

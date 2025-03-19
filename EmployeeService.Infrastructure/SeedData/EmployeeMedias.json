@@ -1,0 +1,14 @@
+[
+    {
+        "EmployeeMediaID": "E51D7149-CA85-4739-BCF1-CEDAA6928D68",
+        "EmployeeID": "63E29A28-BC90-4CD1-8F9E-AB9834BDDE6C",
+        "MediaType": "AVATAR",
+        "MediaUrl": "/wwwroot/Asserts/avatar.png"
+    },
+    {
+        "EmployeeMediaID": "674D4176-7D33-44FB-A198-583028016A62",
+        "EmployeeID": "D05780D4-5742-40CA-8403-0FEBD44B1555",
+        "MediaType": "AVATAR",
+        "MediaUrl": "/wwwroot/Asserts/avatar.png"
+    }
+]

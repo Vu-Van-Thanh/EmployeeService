@@ -32,20 +32,22 @@ namespace EmployeeService.Infrastructure.Repositories
         public async Task<Relative> UpsertRelative(Relative relative)
         {
             var existingRelative = await dbContext.Relatives
+                .AsNoTracking() 
                 .FirstOrDefaultAsync(r => r.RelativeID == relative.RelativeID);
 
             if (existingRelative == null)
             {
-                await dbContext.Relatives.AddAsync(relative);
+                await dbContext.Relatives.AddAsync(relative); // Thêm mới
             }
             else
             {
-                dbContext.Entry(existingRelative).CurrentValues.SetValues(relative);
+                dbContext.Relatives.Update(relative); 
             }
 
             await dbContext.SaveChangesAsync();
             return relative;
         }
+
 
     }
 }

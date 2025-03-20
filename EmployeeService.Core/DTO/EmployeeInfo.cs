@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 
 namespace EmployeeService.Core.DTO
 {
+    
     public class EmployeeInfo
     {
+        public string? Position { get; set; }
         public string? FirstName { get; set; }
 
         public string? LastName { get; set; }
@@ -65,7 +67,8 @@ namespace EmployeeService.Core.DTO
                 Province = employee.Province,
                 District = employee.District,
                 Commune = employee.Commune,
-                InsuranceNumber = employee.InsuranceNumber
+                InsuranceNumber = employee.InsuranceNumber,
+                Position = employee.Position
             };
         }
     }

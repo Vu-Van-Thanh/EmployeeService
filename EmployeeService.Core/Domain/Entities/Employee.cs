@@ -7,6 +7,7 @@ namespace EmployeeService.Core.Domain.Entities
     {
         [Key]
         public Guid EmployeeID { get; set; }
+        public string Position { get; set;}
 
         public Guid? AccountID { get; set; }
         public Guid? DepartmentID { get; set; }
@@ -30,6 +31,7 @@ namespace EmployeeService.Core.Domain.Entities
 
 
         public virtual ICollection<EmployeeMedia>? EmployeeMedia { get; set; }
+        public virtual ICollection<EmployeeContract>? EmployeeContract { get; set; }
 
         // Thông tin bổ sung
         [StringLength(100)]

@@ -3,6 +3,7 @@ using EmployeeService.Core.Domain.Entities;
 using EmployeeService.Core.RepositoryContracts;
 using EmployeeService.Infrastructure.AppDbContext;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace EmployeeService.Infrastructure.Repositories
 {
@@ -37,6 +38,8 @@ namespace EmployeeService.Infrastructure.Repositories
             Employee? employee =  await _dbcontext.Employees.FirstOrDefaultAsync(e => e.EmployeeID == Id);
             return employee;
         }
+
+
 
         public async  Task<Employee?> GetEmployeeIdByUserId(Guid Id)
         {
@@ -92,6 +95,26 @@ namespace EmployeeService.Infrastructure.Repositories
             }
             return existEmployee.EmployeeID;
             
+        }
+
+        public async Task<List<Employee>> GetAllEmployeesByFeature(string feature, string value)
+        {
+            if (value == "All")
+            {
+                return await _dbcontext.Employees.ToListAsync();
+            }
+
+            var property = typeof(Employee).GetProperty(feature, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+            if (property == null)
+            {
+                throw new ArgumentException($"Feature '{feature}' is not a valid column in Employee.");
+            }
+
+            var employees = await _dbcontext.Employees.ToListAsync();
+
+            return employees
+                .Where(e => property.GetValue(e)?.ToString() == value)
+                .ToList();
         }
     }
 }

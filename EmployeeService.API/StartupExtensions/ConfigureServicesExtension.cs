@@ -28,6 +28,8 @@ namespace EmployeeServiceRegistry
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IRelativeRepository, RelativeRepository>();
             services.AddScoped<IRelativeService, RelativeService>();
+            services.AddScoped<IEmployeeContractRepository, EmployeeContractRepository>();
+            services.AddScoped<IEmployeeContractService, EmployeeContractService>();
 
             // cấu hình swagger
             services.AddEndpointsApiExplorer();

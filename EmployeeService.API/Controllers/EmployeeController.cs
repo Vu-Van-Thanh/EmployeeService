@@ -11,9 +11,9 @@ namespace EmployeeService.API.Controllers
     [ApiController]
     public class EmployeeController : ControllerBase
     {
-        private readonly EmployeeServices _employeeService;
+        private readonly IEmployeeService _employeeService;
 
-        public EmployeeController(EmployeeServices employeeService)
+        public EmployeeController(IEmployeeService employeeService)
         {
             _employeeService = employeeService;
         }

@@ -17,7 +17,7 @@ namespace EmployeeService.Core.Services
 
         private readonly string _rootFolderPath;
 
-        public FileService(string rootFolderPath)
+        public FileService()
         {
             _rootFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Uploads");
         }

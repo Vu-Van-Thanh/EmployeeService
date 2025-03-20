@@ -1,0 +1,22 @@
+[
+  {
+    "ContractId": "9CE6D105-3F65-432E-85F0-714299EB6644",
+    "EmployeeId": "63E29A28-BC90-4CD1-8F9E-AB9834BDDE6C",
+    "ContractNumber": "CT0001",
+    "ContractType": "Full-time",
+    "StartDate": "2023-01-01T00:00:00",
+    "EndDate": "2025-01-01T00:00:00",
+    "SalaryIndex": 1.5,
+    "Status": "Active"
+  },
+  {
+    "ContractId": "D05780D4-5742-40CA-8403-0FEBD44B1555",
+    "EmployeeId": "22222222-2222-2222-2222-222222222222",
+    "ContractNumber": "CT0002",
+    "ContractType": "Part-time",
+    "StartDate": "2024-01-01T00:00:00",
+    "EndDate": null,
+    "SalaryIndex": 1.2,
+    "Status": "Active"
+  }
+]

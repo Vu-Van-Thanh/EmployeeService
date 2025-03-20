@@ -15,5 +15,6 @@ namespace EmployeeService.Core.RepositoryContracts
         Task<bool> AddEmployee(Employee employee);
         Task<Employee?> GetEmployeeIdByUserId(Guid Id);
         Task<bool> DeleteEmployee(Guid employeeId);
+        Task<List<Employee>> GetAllEmployeesByFeature(string feature, string value);
     }
 }

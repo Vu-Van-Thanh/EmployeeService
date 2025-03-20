@@ -11,6 +11,7 @@ namespace EmployeeService.Core.Services
         Task<EmployeeInfo> GetEmployeeById(Guid Id);
         Task<EmployeeUpdateResponse> UpdateEmployee(EmployeeUpdateRequest employee, Guid EmployeeId);
         Task<List<EmployeeInfo>> GetAllEmployees();
+        Task<List<EmployeeInfo>> GetEmployeesByFeature(string feature, string value = "All");
         Task<bool> AddEmployee(EmployeeAddRequest employee);
         Task<Guid> GetEmployeeIdByUserId(Guid Id);
         Task<bool> DeleteEmployee(Guid employeeId);
@@ -72,6 +73,7 @@ namespace EmployeeService.Core.Services
             return employeeInfo;
         }
 
+
         public async Task<EmployeeInfo> GetEmployeeById(Guid Id)
         {
            Employee employee = await _employeesRepository.GetEmployeeById(Id);
@@ -89,6 +91,12 @@ namespace EmployeeService.Core.Services
             return Guid.Empty;
         }
 
+        public async Task<List<EmployeeInfo>> GetEmployeesByFeature(string feature, string value = "All")
+        {
+            List<Employee> em = await _employeesRepository.GetAllEmployeesByFeature(feature, value);
+            return em.Select(em => em.ToEmployeeInfo()).ToList();   
+        }
+
         public async Task<EmployeeUpdateResponse> UpdateEmployee(EmployeeUpdateRequest employee, Guid EmployeeId)
         {
             Employee exist = await _employeesRepository.GetEmployeeById(EmployeeId);
@@ -104,6 +112,7 @@ namespace EmployeeService.Core.Services
             if (!string.IsNullOrEmpty(employee.LastName)) exist.LastName = employee.LastName;
 
             // Cập nhật các trường khác nếu khác null và không rỗng
+            if (!string.IsNullOrEmpty(employee.Position)) exist.Position = employee.Position;
             if (!string.IsNullOrEmpty(employee.Nationality)) exist.Nationality = employee.Nationality;
             if (!string.IsNullOrEmpty(employee.Ethnic)) exist.Ethnic = employee.Ethnic;
             if (!string.IsNullOrEmpty(employee.Religion)) exist.Religion = employee.Religion;

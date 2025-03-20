@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace EmployeeService.Infrastructure.MessageBroker
 {
-    public class KafkaProducerService
+    public class KafkaProducerService : IMessageProducer
     {
         private readonly string _bootstrapServers;
         private readonly string _topic;

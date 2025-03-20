@@ -19,12 +19,12 @@ namespace EmployeeService.Core.Services
     public class EmployeeServices : IEmployeeService
     {
         private readonly IEmployeeRepository _employeesRepository;
-        private readonly KafkaProducerService _kafkaProducer;
+        private readonly IMessageProducer _messageProducer;
 
-        public EmployeeServices(IEmployeeRepository employeesRepository, KafkaProducerService kafkaProducer)
+        public EmployeeServices(IEmployeeRepository employeesRepository, IMessageProducer messageProducer)
         {
             _employeesRepository = employeesRepository;
-            _kafkaProducer = kafkaProducer;
+            _messageProducer = messageProducer;
         }
 
         public async Task<bool> AddEmployee(EmployeeAddRequest employee)
@@ -138,7 +138,7 @@ namespace EmployeeService.Core.Services
             if(!string.IsNullOrEmpty(employee.Phone) || !string.IsNullOrEmpty(employee.Email))
             {
                 // Cập nhật vào user database
-                await _kafkaProducer.SendMessageAsync(new
+                await _messageProducer.SendMessageAsync(new
                 {
                     UserId = exist.AccountID,
                     Phone = employee.Phone,

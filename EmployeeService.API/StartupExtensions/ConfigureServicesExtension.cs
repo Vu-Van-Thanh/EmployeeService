@@ -22,8 +22,12 @@ namespace EmployeeServiceRegistry
             // thêm service
             services.AddScoped<IEmployeeService, EmployeeServices>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-
-            services.AddSingleton<KafkaProducerService>();
+            services.AddScoped<IEmployeeMediaRepository, EmployeeMediaRepository>();
+            services.AddScoped<IEmployeeMediaService, EmployeeMediaService>();
+            services.AddSingleton<IMessageProducer, KafkaProducerService>();
+            services.AddScoped<IFileService, FileService>();
+            services.AddScoped<IRelativeRepository, RelativeRepository>();
+            services.AddScoped<IRelativeService, RelativeService>();
 
             // cấu hình swagger
             services.AddEndpointsApiExplorer();

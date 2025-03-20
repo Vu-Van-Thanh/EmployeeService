@@ -9,7 +9,12 @@ namespace EmployeeService.Core.RepositoryContracts
 {
     public interface IEmployeeMediaRepository
     {
-        public Task<EmployeeMedia> GetEmployeeMediaById(Guid Id); 
+        Task<List<EmployeeMedia>> GetAllAsync();
+        Task<EmployeeMedia> GetByIdAsync(Guid id);
+        Task AddAsync(EmployeeMedia employeeMedia);
+        Task UpdateAsync(EmployeeMedia employeeMedia);
+        Task DeleteAsync(Guid id);
+        Task<Guid> GetEmployeeMediaIdByType(Guid employeeId, string Type);
 
     }
 }

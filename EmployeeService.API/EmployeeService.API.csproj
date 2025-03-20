@@ -13,7 +13,7 @@
 
   <ItemGroup>
     <Folder Include="StartupExtensions\" />
-    <Folder Include="wwwroot\uploads\" />
+    <Folder Include="wwwroot\Uploads\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,9 @@
-﻿using EmployeeService.Core.DTO;
+﻿using EmployeeService.Core.Domain.Entities;
+using EmployeeService.Core.DTO;
 using EmployeeService.Core.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -87,6 +90,14 @@ namespace EmployeeService.API.Controllers
                 return NotFound("Employee not found");
 
             return Ok("Xóa thành công nhân viên");
+        }
+
+
+        [HttpPost("import-profile")]
+        public async Task<IActionResult> ImportEmployee ([FromForm] IFormFile formFile)
+        {
+            var result = await _employeeService.ImportProfileFromExcelAsync(formFile);
+            return Ok(result);
         }
     }
 }

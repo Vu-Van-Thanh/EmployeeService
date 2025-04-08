@@ -3,6 +3,9 @@ using EmployeeService.Core.DTO;
 using EmployeeService.Core.Enums;
 using EmployeeService.Core.RepositoryContracts;
 using EmployeeService.Infrastructure.MessageBroker;
+using Microsoft.AspNetCore.Http;
+using OfficeOpenXml;
+using OfficeOpenXml.Drawing;
 
 namespace EmployeeService.Core.Services
 {
@@ -15,6 +18,7 @@ namespace EmployeeService.Core.Services
         Task<bool> AddEmployee(EmployeeAddRequest employee);
         Task<Guid> GetEmployeeIdByUserId(Guid Id);
         Task<bool> DeleteEmployee(Guid employeeId);
+        Task<string> ImportProfileFromExcelAsync(IFormFile file);
 
     }
     public class EmployeeServices : IEmployeeService
@@ -95,6 +99,50 @@ namespace EmployeeService.Core.Services
         {
             List<Employee> em = await _employeesRepository.GetAllEmployeesByFeature(feature, value);
             return em.Select(em => em.ToEmployeeInfo()).ToList();   
+        }
+
+        public async Task<string> ImportProfileFromExcelAsync(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                throw new Exception("File Excel không hợp lệ.");
+
+            using var stream = new MemoryStream();
+            await file.CopyToAsync(stream);
+
+            using var package = new ExcelPackage(stream);
+            var sheet = package.Workbook.Worksheets[0];
+
+            // Mapping dữ liệu từ từng ô
+            var employeeCode = sheet.Cells["C6"].Text.Trim();
+            var fullName = sheet.Cells["C5"].Text.Trim();
+            var email = sheet.Cells["C8"].Text.Trim();
+            var dobText = sheet.Cells["C7"].Text.Trim();
+            DateTime? birthDate = DateTime.TryParse(dobText, out var dt) ? dt : null;
+
+            // Lấy ảnh
+            var picture = sheet.Drawings.OfType<ExcelPicture>().FirstOrDefault();
+            byte[] photo = picture?.Image.ImageBytes;
+
+            // Gọi Repository để update hoặc insert
+            var employee = await _employeesRepository.GetEmployeeById(Guid.Parse(employeeCode));
+            if (employee == null)
+            {
+                employee = new Employee
+                {
+                    EmployeeID = Guid.Parse(employeeCode),
+                  
+                };
+                await _employeesRepository.AddEmployee(employee);
+            }
+            else
+            {
+                // dữ liệu cập nhật
+               
+             
+                await _employeesRepository.UpdateEmployee(employee);
+            }
+
+            return "Import thành công";
         }
 
         public async Task<EmployeeUpdateResponse> UpdateEmployee(EmployeeUpdateRequest employee, Guid EmployeeId)

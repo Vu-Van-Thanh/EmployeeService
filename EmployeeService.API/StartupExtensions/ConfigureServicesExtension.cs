@@ -1,7 +1,8 @@
 ﻿using EmployeeService.Core.RepositoryContracts;
 using EmployeeService.Core.Services;
 using EmployeeService.Infrastructure.AppDbContext;
-using EmployeeService.Infrastructure.MessageBroker;
+using EmployeeService.Infrastructure.Kafka;
+using EmployeeService.Infrastructure.Kafka.Consumers;
 using EmployeeService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -24,12 +25,14 @@ namespace EmployeeServiceRegistry
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             services.AddScoped<IEmployeeMediaRepository, EmployeeMediaRepository>();
             services.AddScoped<IEmployeeMediaService, EmployeeMediaService>();
-            services.AddSingleton<IMessageProducer, KafkaProducerService>();
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IRelativeRepository, RelativeRepository>();
             services.AddScoped<IRelativeService, RelativeService>();
             services.AddScoped<IEmployeeContractRepository, EmployeeContractRepository>();
             services.AddScoped<IEmployeeContractService, EmployeeContractService>();
+            services.Configure<KafkaSettings>(configuration.GetSection("Kafka"));
+            services.AddHostedService<EmployeeConsumer>();
+
 
             // cấu hình swagger
             services.AddEndpointsApiExplorer();

@@ -1,3 +1,4 @@
+using EmployeeService.Infrastructure.Kafka;
 using EmployeeServiceRegistry;
 
 var builder = WebApplication.CreateBuilder(args);

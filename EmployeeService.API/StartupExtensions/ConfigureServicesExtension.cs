@@ -2,10 +2,10 @@
 using EmployeeService.Core.Services;
 using EmployeeService.Infrastructure.AppDbContext;
 using EmployeeService.Infrastructure.Kafka;
-using EmployeeService.Infrastructure.Kafka.Consumers;
 using EmployeeService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using EmployeeService.Core.Extension;
 namespace EmployeeServiceRegistry
 {
     public static class ConfigureServicesExtension
@@ -21,6 +21,7 @@ namespace EmployeeServiceRegistry
 
 
             // thêm service
+            services.AddAutoMapper(typeof(MappingProfile));
             services.AddScoped<IEmployeeService, EmployeeServices>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             services.AddScoped<IEmployeeMediaRepository, EmployeeMediaRepository>();
@@ -31,8 +32,10 @@ namespace EmployeeServiceRegistry
             services.AddScoped<IEmployeeContractRepository, EmployeeContractRepository>();
             services.AddScoped<IEmployeeContractService, EmployeeContractService>();
             services.Configure<KafkaSettings>(configuration.GetSection("Kafka"));
-            services.AddHostedService<EmployeeConsumer>();
+            //services.AddHostedService<EmployeeConsumer>();
 
+            // Cấu hình license cho EPPlus
+            
 
             // cấu hình swagger
             services.AddEndpointsApiExplorer();

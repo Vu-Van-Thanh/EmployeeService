@@ -1,8 +1,8 @@
-﻿using EmployeeService.Core.Domain.Entities;
+﻿using AutoMapper;
+using EmployeeService.Core.Domain.Entities;
 using EmployeeService.Core.DTO;
 using EmployeeService.Core.Enums;
 using EmployeeService.Core.RepositoryContracts;
-using EmployeeService.Infrastructure.MessageBroker;
 using Microsoft.AspNetCore.Http;
 using OfficeOpenXml;
 using OfficeOpenXml.Drawing;
@@ -18,18 +18,19 @@ namespace EmployeeService.Core.Services
         Task<bool> AddEmployee(EmployeeAddRequest employee);
         Task<Guid> GetEmployeeIdByUserId(Guid Id);
         Task<bool> DeleteEmployee(Guid employeeId);
-        Task<string> ImportProfileFromExcelAsync(IFormFile file);
+        Task<EmployeeImportDTO> ImportProfileFromExcelAsync(IFormFile file);
 
     }
     public class EmployeeServices : IEmployeeService
     {
         private readonly IEmployeeRepository _employeesRepository;
-        private readonly IMessageProducer _messageProducer;
+        private readonly IMapper _mapper;
 
-        public EmployeeServices(IEmployeeRepository employeesRepository, IMessageProducer messageProducer)
+
+        public EmployeeServices(IEmployeeRepository employeesRepository, IMapper mapper)
         {
             _employeesRepository = employeesRepository;
-            _messageProducer = messageProducer;
+            _mapper = mapper;
         }
 
         public async Task<bool> AddEmployee(EmployeeAddRequest employee)
@@ -61,7 +62,7 @@ namespace EmployeeService.Core.Services
             return await _employeesRepository.AddEmployee(newEmployee);
         }
 
-        public async  Task<bool> DeleteEmployee(Guid employeeId)
+        public async Task<bool> DeleteEmployee(Guid employeeId)
         {
             return await _employeesRepository.DeleteEmployee(employeeId);
         }
@@ -80,7 +81,7 @@ namespace EmployeeService.Core.Services
 
         public async Task<EmployeeInfo> GetEmployeeById(Guid Id)
         {
-           Employee employee = await _employeesRepository.GetEmployeeById(Id);
+            Employee employee = await _employeesRepository.GetEmployeeById(Id);
             if (employee == null) return null;
             return employee.ToEmployeeInfo();
         }
@@ -88,7 +89,7 @@ namespace EmployeeService.Core.Services
         public async Task<Guid> GetEmployeeIdByUserId(Guid Id)
         {
             Employee? employee = await _employeesRepository.GetEmployeeIdByUserId(Id);
-            if(employee != null)
+            if (employee != null)
             {
                 return employee.EmployeeID;
             }
@@ -98,51 +99,120 @@ namespace EmployeeService.Core.Services
         public async Task<List<EmployeeInfo>> GetEmployeesByFeature(string feature, string value = "All")
         {
             List<Employee> em = await _employeesRepository.GetAllEmployeesByFeature(feature, value);
-            return em.Select(em => em.ToEmployeeInfo()).ToList();   
+            return em.Select(em => em.ToEmployeeInfo()).ToList();
         }
 
-        public async Task<string> ImportProfileFromExcelAsync(IFormFile file)
+        public async Task<EmployeeImportDTO> ImportProfileFromExcelAsync(IFormFile file)
         {
             if (file == null || file.Length == 0)
                 throw new Exception("File Excel không hợp lệ.");
 
             using var stream = new MemoryStream();
             await file.CopyToAsync(stream);
-
+            // ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             using var package = new ExcelPackage(stream);
             var sheet = package.Workbook.Worksheets[0];
 
+
             // Mapping dữ liệu từ từng ô
-            var employeeCode = sheet.Cells["C6"].Text.Trim();
-            var fullName = sheet.Cells["C5"].Text.Trim();
-            var email = sheet.Cells["C8"].Text.Trim();
-            var dobText = sheet.Cells["C7"].Text.Trim();
-            DateTime? birthDate = DateTime.TryParse(dobText, out var dt) ? dt : null;
+            var fullName = sheet.Cells["K3"].Text.Trim();
+            var firstSpaceIndex = fullName.IndexOf(" ");
+            string firstName = "";
+            string lastName = "";
 
-            // Lấy ảnh
-            var picture = sheet.Drawings.OfType<ExcelPicture>().FirstOrDefault();
-            byte[] photo = picture?.Image.ImageBytes;
-
-            // Gọi Repository để update hoặc insert
-            var employee = await _employeesRepository.GetEmployeeById(Guid.Parse(employeeCode));
-            if (employee == null)
+            if (firstSpaceIndex > 0)
             {
-                employee = new Employee
-                {
-                    EmployeeID = Guid.Parse(employeeCode),
-                  
-                };
-                await _employeesRepository.AddEmployee(employee);
+                firstName = fullName.Substring(0, firstSpaceIndex).Trim();
+                lastName = fullName.Substring(firstSpaceIndex + 1).Trim();
             }
             else
             {
-                // dữ liệu cập nhật
-               
-             
-                await _employeesRepository.UpdateEmployee(employee);
+                firstName = fullName;
+                lastName = "";
             }
 
-            return "Import thành công";
+            var email = sheet.Cells["AA8"].Text.Trim();
+            var dayOfBirth = sheet.Cells["K4"].Text.Trim();
+            var monthOfBirth = sheet.Cells["L4"].Text.Trim();
+            var ethnic = sheet.Cells["T3"].Text.Trim();
+            var yearOfBirth = sheet.Cells["M4"].Text.Trim();
+            var identitycard = sheet.Cells["K6"].Value.ToString();
+            var insuranceNumber = sheet.Cells["AB5"].Text.Trim();
+            var phone = sheet.Cells["AB7"].Text.Trim();
+            var address = sheet.Cells["K8"].Text.Trim();
+            var placeIssued = sheet.Cells["V5"].Text.Trim();
+            var placeOfBirth = sheet.Cells["P4"].Text.Trim();
+            // xử lý quê quán
+            string[] nativeLand = sheet.Cells["K7"].Text.Trim().Split("-");
+            var commune = nativeLand[1].Trim();
+            var district = nativeLand[2].Trim();
+            var province = nativeLand[3].Trim();
+            var country = nativeLand[4].Trim();
+
+            var tax = sheet.Cells["H11"].Text.Trim();
+            var bankAccountOwner = sheet.Cells["P12"].Text.Trim();
+            var bankAccountName = sheet.Cells["Y12"].Text.Trim();
+            var vehical = sheet.Cells["H13"].Text.Trim() + " " + sheet.Cells["U13"].Text.Trim();
+
+            // ảnh hồ sơ
+            //var picture = sheet.Drawings.OfType<ExcelPicture>().FirstOrDefault(p => p.From.Row == 3 && p.From.Column == 1);
+            var pictures = sheet.Drawings.OfType<ExcelPicture>().ToList();
+            var path = string.Empty;
+            if (pictures.Any())
+            {
+                byte[] imageBytes = pictures[0].Image.ImageBytes;
+
+                var savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "output.jpg");
+                path = savePath;
+                await File.WriteAllBytesAsync(savePath, imageBytes);
+            }
+            else
+            {
+                Console.WriteLine("❌ Không tìm thấy ảnh nào trong sheet.");
+            }
+
+            DateTime? birthDate = null;
+            if (int.TryParse(dayOfBirth, out var day) &&
+                int.TryParse(monthOfBirth, out var month) &&
+                int.TryParse(yearOfBirth, out var year))
+            {
+                try
+                {
+                    birthDate = new DateTime(year, month, day);
+                }
+                catch
+                {
+                    birthDate = null;
+                }
+            }
+            EmployeeImportDTO result = new EmployeeImportDTO
+            {
+                FirstName = firstName,
+                LastName = lastName,
+                Email = email,
+                DateOfBirth = birthDate,
+                Ethnic = ethnic,
+                IndentityCard = identitycard,
+                Phone = phone,
+                Address = address,
+                InsuranceNumber = insuranceNumber,
+                Tax = tax,
+                BankAccountOwner = bankAccountOwner,
+                BankAccountName = bankAccountName,
+                Vehicle = vehical,
+                path = path,
+                Commune = commune,
+                District = district,
+                Province = province,
+                Country = country,
+                PlaceIssued = placeIssued,
+                PlaceOfBirth = placeOfBirth
+
+            };
+            Employee employee = _mapper.Map<Employee>(result);
+
+            return result;
+
         }
 
         public async Task<EmployeeUpdateResponse> UpdateEmployee(EmployeeUpdateRequest employee, Guid EmployeeId)
@@ -178,35 +248,23 @@ namespace EmployeeService.Core.Services
             if (!string.IsNullOrEmpty(employee.Commune)) exist.Commune = employee.Commune;
             if (!string.IsNullOrEmpty(employee.Address)) exist.Address = employee.Address;
 
-          
+
             if (!string.IsNullOrEmpty(employee.InsuranceNumber)) exist.InsuranceNumber = employee.InsuranceNumber;
 
-           
-            
+
+
 
             // Cập nhật vào employee database
             Guid result = await _employeesRepository.UpdateEmployee(exist);
-            if(result != EmployeeId)
+            if (result != EmployeeId)
             {
 
-               throw new Exception("Update employee failed.");
+                throw new Exception("Update employee failed.");
             }
 
-            if(!string.IsNullOrEmpty(employee.Phone) || !string.IsNullOrEmpty(employee.Email))
-            {
-                // Cập nhật vào user database
-                await _messageProducer.SendMessageAsync(new
-                {
-                    UserId = exist.AccountID,
-                    Phone = employee.Phone,
-                    Email = employee.Email,
-                    UpdatedAt = DateTime.UtcNow
-                });
 
-            }
-            
 
-            return new EmployeeUpdateResponse { Result="Updated Employee"};
+            return new EmployeeUpdateResponse { Result = "Updated Employee" };
         }
     }
 }

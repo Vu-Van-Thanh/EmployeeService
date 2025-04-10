@@ -94,7 +94,7 @@ namespace EmployeeService.API.Controllers
 
 
         [HttpPost("import-profile")]
-        public async Task<IActionResult> ImportEmployee ([FromForm] IFormFile formFile)
+        public async Task<IActionResult> ImportEmployee ( IFormFile formFile)
         {
             var result = await _employeeService.ImportProfileFromExcelAsync(formFile);
             return Ok(result);

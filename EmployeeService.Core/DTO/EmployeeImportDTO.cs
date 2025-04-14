@@ -11,6 +11,7 @@ namespace EmployeeService.Core.DTO
 {
     public class EmployeeImportDTO
     {
+        public Guid? EmployeeId { get; set; }
         public string? path { get; set; }
         public string? FirstName { get; set; }
         public string? LastName { get; set; }

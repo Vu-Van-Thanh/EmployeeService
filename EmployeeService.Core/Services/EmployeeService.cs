@@ -15,7 +15,7 @@ namespace EmployeeService.Core.Services
         Task<EmployeeUpdateResponse> UpdateEmployee(EmployeeUpdateRequest employee, Guid EmployeeId);
         Task<List<EmployeeInfo>> GetAllEmployees();
         Task<List<EmployeeInfo>> GetEmployeesByFeature(string feature, string value = "All");
-        Task<bool> AddEmployee(EmployeeAddRequest employee);
+        Task<Guid> AddEmployee(EmployeeAddRequest employee);
         Task<Guid> GetEmployeeIdByUserId(Guid Id);
         Task<bool> DeleteEmployee(Guid employeeId);
         Task<EmployeeImportDTO> ImportProfileFromExcelAsync(IFormFile file);
@@ -24,16 +24,18 @@ namespace EmployeeService.Core.Services
     public class EmployeeServices : IEmployeeService
     {
         private readonly IEmployeeRepository _employeesRepository;
+        private readonly IEmployeeMediaRepository _employeeMediaRepository;
         private readonly IMapper _mapper;
 
 
-        public EmployeeServices(IEmployeeRepository employeesRepository, IMapper mapper)
+        public EmployeeServices(IEmployeeRepository employeesRepository, IMapper mapper, IEmployeeMediaRepository employeeMediaRepository)
         {
             _employeesRepository = employeesRepository;
             _mapper = mapper;
+            _employeeMediaRepository = employeeMediaRepository;
         }
 
-        public async Task<bool> AddEmployee(EmployeeAddRequest employee)
+        public async Task<Guid> AddEmployee(EmployeeAddRequest employee)
         {
             Employee newEmployee = new Employee
             {
@@ -59,7 +61,8 @@ namespace EmployeeService.Core.Services
                 InsuranceNumber = employee.InsuranceNumber
 
             };
-            return await _employeesRepository.AddEmployee(newEmployee);
+            await _employeesRepository.AddEmployee(newEmployee);
+            return newEmployee.EmployeeID;
         }
 
         public async Task<bool> DeleteEmployee(Guid employeeId)
@@ -142,6 +145,8 @@ namespace EmployeeService.Core.Services
             var address = sheet.Cells["K8"].Text.Trim();
             var placeIssued = sheet.Cells["V5"].Text.Trim();
             var placeOfBirth = sheet.Cells["P4"].Text.Trim();
+            Guid? id = Guid.Parse(sheet.Cells["K5"].Text.Trim());
+            Guid? newId = Guid.Empty;
             // xử lý quê quán
             string[] nativeLand = sheet.Cells["K7"].Text.Trim().Split("-");
             var commune = nativeLand[1].Trim();
@@ -153,18 +158,44 @@ namespace EmployeeService.Core.Services
             var bankAccountOwner = sheet.Cells["P12"].Text.Trim();
             var bankAccountName = sheet.Cells["Y12"].Text.Trim();
             var vehical = sheet.Cells["H13"].Text.Trim() + " " + sheet.Cells["U13"].Text.Trim();
-
+            if (id == null)
+            {
+                newId = Guid.NewGuid();
+            }
             // ảnh hồ sơ
-            //var picture = sheet.Drawings.OfType<ExcelPicture>().FirstOrDefault(p => p.From.Row == 3 && p.From.Column == 1);
             var pictures = sheet.Drawings.OfType<ExcelPicture>().ToList();
             var path = string.Empty;
+            string realPath = string.Empty;
             if (pictures.Any())
             {
-                byte[] imageBytes = pictures[0].Image.ImageBytes;
+                var picture = pictures[0];
+                byte[] imageBytes = picture.Image.ImageBytes;
 
-                var savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "output.jpg");
-                path = savePath;
+                // Lấy extension từ ảnh (nếu không có, mặc định là .png)
+                string extension = Path.GetExtension(picture.Name);
+                if (string.IsNullOrEmpty(extension))
+                {
+                    extension = ".png";
+                }
+
+                // Đặt tên file ảnh: FirstLast_ID.extension
+                string imageName = $"{firstName}_{lastName}_{(id == null ? newId.ToString() : id.ToString())}{extension}";
+
+                // Đường dẫn tuyệt đối và tương đối
+                var savePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "EmployeeAvatarProfile", imageName);
+                realPath = Path.Combine("Uploads", "EmployeeAvatarProfile", imageName);
+
+                // Tạo thư mục nếu chưa có
+                var folder = Path.GetDirectoryName(savePath);
+                if (!Directory.Exists(folder))
+                {
+                    Directory.CreateDirectory(folder);
+                }
+
+                // Ghi file
                 await File.WriteAllBytesAsync(savePath, imageBytes);
+
+                path = savePath;
             }
             else
             {
@@ -187,6 +218,7 @@ namespace EmployeeService.Core.Services
             }
             EmployeeImportDTO result = new EmployeeImportDTO
             {
+                EmployeeId = newId != Guid.Empty ? newId : id,
                 FirstName = firstName,
                 LastName = lastName,
                 Email = email,
@@ -210,7 +242,53 @@ namespace EmployeeService.Core.Services
 
             };
             Employee employee = _mapper.Map<Employee>(result);
-
+            EmployeeMedia media;
+            
+            if(id == null)
+            {
+                await  _employeesRepository.AddEmployee(employee);
+                
+            }
+            else
+            {
+               await  _employeesRepository.UpdateEmployee(employee);
+            }
+            if(!string.IsNullOrEmpty(path))
+            {
+                Guid existMedia;
+                try
+                {
+                    existMedia = await _employeeMediaRepository.GetEmployeeMediaIdByType(employee.EmployeeID, "Avatar");
+                }
+                catch (Exception ex)
+                {
+                    existMedia = Guid.Empty;
+                }
+               
+                if(existMedia == Guid.Empty)
+                {
+                    media = new EmployeeMedia
+                    {
+                        EmployeeMediaID = Guid.NewGuid(),
+                        EmployeeID = employee.EmployeeID,
+                        MediaUrl = realPath,
+                        MediaType = "Avatar"
+                    };
+                    await _employeeMediaRepository.AddAsync(media);
+                }
+                else
+                {
+                    media = new EmployeeMedia
+                    {
+                        EmployeeMediaID = existMedia,
+                        EmployeeID = employee.EmployeeID,
+                        MediaUrl = realPath,
+                        MediaType = "Avatar"
+                    };
+                    await _employeeMediaRepository.UpdateAsync(media);
+                }
+               
+            }
             return result;
 
         }
@@ -262,8 +340,117 @@ namespace EmployeeService.Core.Services
                 throw new Exception("Update employee failed.");
             }
 
+            // cập nhật thông tin các file ảnh
+            if (employee.identityCardImage != null)
+            {
+                foreach(IdentityCard item in employee.identityCardImage)
+                {
+                    Guid existMedia = await _employeeMediaRepository.GetEmployeeMediaIdByType(EmployeeId,item.type);
+                    if (existMedia != Guid.Empty)
+                    {
+                        string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "IdentityCard");
+                        string extension = Path.GetExtension(item.identityImage.FileName);
+                        string fileName = $"{EmployeeId}_{item.type}{extension}";
+                        string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "IdentityCard");
+                        string fullPath = Path.Combine(folderPath, fileName);
+                        string relativePath = Path.Combine("Uploads", "IdentityCard", fileName);
+                        if (File.Exists(path))
+                        {
+                            File.Delete(path);
+                        }
+                        using (var stream = new FileStream(fullPath, FileMode.Create))
+                        {
+                            await item.identityImage.CopyToAsync(stream);
+                        }
+                        EmployeeMedia media = new EmployeeMedia
+                        {
+                            EmployeeMediaID = existMedia,
+                            EmployeeID = exist.EmployeeID,
+                            MediaUrl = relativePath,
+                            MediaType = item.type
+                        };
+                        await _employeeMediaRepository.UpdateAsync(media);
+                    }
+                    else
+                    {
+                        string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "IdentityCard");
+                        string extension = Path.GetExtension(item.identityImage.FileName);
+                        string fileName = $"{EmployeeId}_{item.type}{extension}";
+                        string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "IdentityCard");
+                        string fullPath = Path.Combine(folderPath, fileName);
+                        string relativePath = Path.Combine("Uploads", "IdentityCard", fileName);
+                        using (var stream = new FileStream(fullPath, FileMode.Create))
+                        {
+                            await item.identityImage.CopyToAsync(stream);
+                        }
+                        EmployeeMedia media = new EmployeeMedia
+                        {
+                            EmployeeMediaID = Guid.NewGuid(),
+                            EmployeeID = exist.EmployeeID,
+                            MediaUrl = relativePath,
+                            MediaType = item.type
+                        };
+                        await _employeeMediaRepository.AddAsync(media);
+                    }
 
+                }
+            }
 
+            // ảnh căn cước công dân
+            if (employee.insuranceCardImage != null)
+            {
+                foreach (InsuranceCard item in employee.insuranceCardImage)
+                {
+                    Guid existMedia = await _employeeMediaRepository.GetEmployeeMediaIdByType(EmployeeId, item.type);
+                    if (existMedia != Guid.Empty)
+                    {
+                        string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "InsuranceCard");
+                        string extension = Path.GetExtension(item.insuranceImage.FileName);
+                        string fileName = $"{EmployeeId}_{item.type}{extension}";
+                        string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "InsuranceCard");
+                        string fullPath = Path.Combine(folderPath, fileName);
+                        string relativePath = Path.Combine("Uploads", "InsuranceCard", fileName);
+                        if (File.Exists(path))
+                        {
+                            File.Delete(path);
+                        }
+                        using (var stream = new FileStream(fullPath, FileMode.Create))
+                        {
+                            await item.insuranceImage.CopyToAsync(stream);
+                        }
+                        EmployeeMedia media = new EmployeeMedia
+                        {
+                            EmployeeMediaID = existMedia,
+                            EmployeeID = exist.EmployeeID,
+                            MediaUrl = relativePath,
+                            MediaType = item.type
+                        };
+                        await _employeeMediaRepository.UpdateAsync(media);
+                    }
+                    else
+                    {
+                        string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "InsuranceCard");
+                        string extension = Path.GetExtension(item.insuranceImage.FileName);
+                        string fileName = $"{EmployeeId}_{item.type}{extension}";
+                        string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "InsuranceCard");
+                        string fullPath = Path.Combine(folderPath, fileName);
+                        string relativePath = Path.Combine("Uploads", "InsuranceCard", fileName);
+                        using (var stream = new FileStream(fullPath, FileMode.Create))
+                        {
+                            await item.insuranceImage.CopyToAsync(stream);
+                        }
+                        EmployeeMedia media = new EmployeeMedia
+                        {
+                            EmployeeMediaID = Guid.NewGuid(),
+                            EmployeeID = exist.EmployeeID,
+                            MediaUrl = relativePath,
+                            MediaType = item.type
+                        };
+                        await _employeeMediaRepository.AddAsync(media);
+                    }
+
+                }
+            }
             return new EmployeeUpdateResponse { Result = "Updated Employee" };
         }
     }

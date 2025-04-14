@@ -10,10 +10,10 @@ namespace EmployeeService.API.Controllers
     [ApiController]
     public class EmployeeMediaController : ControllerBase
     {
-        private readonly EmployeeMediaService _service;
+        private readonly IEmployeeMediaService _service;
         private readonly EmployeeServices _employeeService;
 
-        public EmployeeMediaController(EmployeeMediaService service, EmployeeServices employeeService)
+        public EmployeeMediaController(IEmployeeMediaService service, EmployeeServices employeeService)
         {
             _service = service;
             _employeeService = employeeService; 

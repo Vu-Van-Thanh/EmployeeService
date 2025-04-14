@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EmployeeService.Core.DTO;
+﻿using EmployeeService.Core.DTO;
 
-namespace EmployeeService.Core.MessageBroker
+namespace EmployeeService.Infrastructure.Kafka.Handlers
 {
     public class EmployeeUpdateHandler : IKafkaHandler<EmployeeUpdateRequest>
     {

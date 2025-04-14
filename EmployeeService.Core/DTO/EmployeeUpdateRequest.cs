@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,5 +28,18 @@ namespace EmployeeService.Core.DTO
         public string? Commune { get; set; }
         public string? Address { get; set; }  
         public string? InsuranceNumber { get; set; }
+        public List<IdentityCard>? identityCardImage { get; set; }
+        public List<InsuranceCard>? insuranceCardImage { get; set; }
+        public IFormFile? avatar { get; set; }
+    }
+    public class IdentityCard
+    {
+        public IFormFile identityImage { get; set; }
+        public string type { get; set; }
+    }
+    public class InsuranceCard
+    {
+        public IFormFile insuranceImage { get; set; }
+        public string type { get; set; }
     }
 }

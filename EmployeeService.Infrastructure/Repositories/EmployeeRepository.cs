@@ -16,10 +16,19 @@ namespace EmployeeService.Infrastructure.Repositories
             _dbcontext = applicationDbContext;
         }
 
-        public async Task<bool> AddEmployee(Employee employee)
+        public async Task<Guid> AddEmployee(Employee employee)
         {
-            await _dbcontext.Employees.AddAsync(employee);
-            return await _dbcontext.SaveChangesAsync() > 0;
+            try
+            {
+                await _dbcontext.Employees.AddAsync(employee);
+                await _dbcontext.SaveChangesAsync();
+                return employee.EmployeeID;
+            }
+            catch
+            {
+                return Guid.Empty;
+            }
+
         }
 
         public async Task<bool> DeleteEmployee(Guid employeeId)

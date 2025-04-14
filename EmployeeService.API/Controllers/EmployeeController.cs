@@ -4,6 +4,7 @@ using EmployeeService.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
+using OrchestratorService.API.Kafka.Producer;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,10 +16,12 @@ namespace EmployeeService.API.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
+        private readonly IEventProducer _eventProducer;
 
-        public EmployeeController(IEmployeeService employeeService)
+        public EmployeeController(IEmployeeService employeeService, IEventProducer eventProducer)
         {
             _employeeService = employeeService;
+            _eventProducer = eventProducer;
         }
 
         /// <summary>
@@ -52,11 +55,14 @@ namespace EmployeeService.API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
-            if(!(await _employeeService.AddEmployee(employee)))
+            try
+            {
+                await _employeeService.AddEmployee(employee);
+            }
+            catch
             {
                 return Ok("Không thể thêm người dùng");
-            };
+            }
             return Ok("Thêm nhân viên thành công");
             
         }
@@ -96,7 +102,8 @@ namespace EmployeeService.API.Controllers
         [HttpPost("import-profile")]
         public async Task<IActionResult> ImportEmployee ( IFormFile formFile)
         {
-            var result = await _employeeService.ImportProfileFromExcelAsync(formFile);
+            EmployeeImportDTO result = await _employeeService.ImportProfileFromExcelAsync(formFile);
+            await _eventProducer.PublishAsync("employee-created", null, "employee-imported", result);
             return Ok(result);
         }
     }

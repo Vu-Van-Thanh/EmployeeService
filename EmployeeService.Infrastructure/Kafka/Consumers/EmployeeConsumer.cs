@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 using Confluent.Kafka;
 using EmployeeService.Core.DTO;
-using EmployeeService.Core.MessageBroker;
+using EmployeeService.Infrastructure.Kafka.Handlers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -64,5 +59,13 @@ namespace EmployeeService.Infrastructure.Kafka.Consumers
                 }
             }
         }
+
+        public override Task StopAsync(CancellationToken cancellationToken)
+        {
+            _consumer.Close();    // Dừng Kafka consumer một cách "gracefully"
+            _consumer.Dispose();  // Giải phóng tài nguyên
+            return base.StopAsync(cancellationToken); // Gọi base nếu có thêm xử lý mặc định
+        }
+
     }
 }

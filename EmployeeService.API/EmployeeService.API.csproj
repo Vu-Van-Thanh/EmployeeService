@@ -17,9 +17,9 @@
 
   <ItemGroup>
     <Folder Include="StartupExtensions\" />
-    <Folder Include="wwwroot\Uploads\" />
-    <Folder Include="wwwroot\Uploads\" />
-    <Folder Include="wwwroot\Uploads\" />
+    <Folder Include="wwwroot\Uploads\EmployeeAvatarProfile\" />
+    <Folder Include="wwwroot\Uploads\IdentityCard\" />
+    <Folder Include="wwwroot\Uploads\InsuranceCard\" />
   </ItemGroup>
 
   <ItemGroup>

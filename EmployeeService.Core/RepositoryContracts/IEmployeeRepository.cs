@@ -12,7 +12,7 @@ namespace EmployeeService.Core.RepositoryContracts
         public Task<Employee?> GetEmployeeById(Guid Id);
         public Task<Guid> UpdateEmployee(Employee employee);
         Task<List<Employee>> GetAll();
-        Task<bool> AddEmployee(Employee employee);
+        Task<Guid> AddEmployee(Employee employee);
         Task<Employee?> GetEmployeeIdByUserId(Guid Id);
         Task<bool> DeleteEmployee(Guid employeeId);
         Task<List<Employee>> GetAllEmployeesByFeature(string feature, string value);

@@ -6,6 +6,7 @@ using EmployeeService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using EmployeeService.Core.Extension;
+using OrchestratorService.API.Kafka.Producer;
 namespace EmployeeServiceRegistry
 {
     public static class ConfigureServicesExtension
@@ -31,6 +32,7 @@ namespace EmployeeServiceRegistry
             services.AddScoped<IRelativeService, RelativeService>();
             services.AddScoped<IEmployeeContractRepository, EmployeeContractRepository>();
             services.AddScoped<IEmployeeContractService, EmployeeContractService>();
+            services.AddScoped<IEventProducer, EmployeeProducer>();
             services.Configure<KafkaSettings>(configuration.GetSection("Kafka"));
             //services.AddHostedService<EmployeeConsumer>();
 

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace EmployeeService.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class EmployeeController : ControllerBase
     {
@@ -37,10 +37,20 @@ namespace EmployeeService.API.Controllers
         /// <summary>
         /// Lấy thông tin chi tiết của một nhân viên
         /// </summary>
-        [HttpGet("{id}")]
+        [HttpGet("user/{id}")]
         public async Task<ActionResult<EmployeeInfo>> GetEmployeeById(Guid id)
         {
             var employee = await _employeeService.GetEmployeeById(id);
+            if (employee == null)
+                return NotFound("Employee not found");
+
+            return Ok(employee);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<EmployeeInfo>> GetUserProfile(Guid id)
+        {
+            var employee = await _employeeService.GetEmployeeIdByUserId(id);
             if (employee == null)
                 return NotFound("Employee not found");
 

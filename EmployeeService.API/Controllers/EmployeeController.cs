@@ -47,10 +47,10 @@ namespace EmployeeService.API.Controllers
             return Ok(employee);
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<EmployeeInfo>> GetUserProfile(Guid id)
+        [HttpGet("profiles/{id}")]
+        public async Task<ActionResult<EmployeeInfo>> GetUserProfile(string id)
         {
-            var employee = await _employeeService.GetEmployeeIdByUserId(id);
+            var employee = await _employeeService.GetEmployeeIdByUserId(Guid.Parse(id));
             if (employee == null)
                 return NotFound("Employee not found");
 
@@ -86,7 +86,7 @@ namespace EmployeeService.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            Guid employeeId = await _employeeService.GetEmployeeIdByUserId(userId);
+            Guid employeeId = Guid.Parse((await _employeeService.GetEmployeeIdByUserId(userId)).EmployeeID);
 
             EmployeeUpdateResponse result = await _employeeService.UpdateEmployee(employeeDto, employeeId);
            
@@ -100,7 +100,7 @@ namespace EmployeeService.API.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(Guid id)
         {
-            Guid employeeId = await _employeeService.GetEmployeeIdByUserId(id);
+            Guid employeeId = Guid.Parse((await _employeeService.GetEmployeeIdByUserId(id)).EmployeeID);
             bool result = await _employeeService.DeleteEmployee(id);
             if (!result)
                 return NotFound("Employee not found");

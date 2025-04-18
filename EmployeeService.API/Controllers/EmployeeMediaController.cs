@@ -39,7 +39,7 @@ namespace EmployeeService.API.Controllers
         {
             if(employeeMedia.EmployeeId == Guid.Empty)
             {
-               employeeMedia.EmployeeId = await _employeeService.GetEmployeeIdByUserId(id);
+               employeeMedia.EmployeeId = Guid.Parse((await _employeeService.GetEmployeeIdByUserId(id)).EmployeeID);
             }
             try
             {
@@ -59,7 +59,7 @@ namespace EmployeeService.API.Controllers
         {
             if (employeeMedia.EmployeeId == Guid.Empty)
             {
-                employeeMedia.EmployeeId = await _employeeService.GetEmployeeIdByUserId(id);
+                employeeMedia.EmployeeId = Guid.Parse((await _employeeService.GetEmployeeIdByUserId(id)).EmployeeID);
             }
             await _service.UpdateAsync(employeeMedia);
             return Ok("Updated");

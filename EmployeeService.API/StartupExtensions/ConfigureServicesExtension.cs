@@ -36,8 +36,17 @@ namespace EmployeeServiceRegistry
             services.Configure<KafkaSettings>(configuration.GetSection("Kafka"));
             //services.AddHostedService<EmployeeConsumer>();
 
-            // Cấu hình license cho EPPlus
-            
+            // Cấu hình corse
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", policy =>
+                {
+                    policy.AllowAnyOrigin()      
+                          .AllowAnyMethod()      
+                          .AllowAnyHeader();     
+                });
+            });
+
 
             // cấu hình swagger
             services.AddEndpointsApiExplorer();

@@ -14,7 +14,7 @@ namespace EmployeeService.Core.RepositoryContracts
         Task AddAsync(EmployeeMedia employeeMedia);
         Task UpdateAsync(EmployeeMedia employeeMedia);
         Task DeleteAsync(Guid id);
-        Task<Guid> GetEmployeeMediaIdByType(Guid employeeId, string Type);
+        Task<EmployeeMedia?> GetEmployeeMediaIdByType(Guid employeeId, string Type);
 
     }
 }

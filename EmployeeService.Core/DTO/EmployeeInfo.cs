@@ -44,6 +44,9 @@ namespace EmployeeService.Core.DTO
 
         public string? Commune { get; set; }
         public string? InsuranceNumber { get; set; }
+        public string? avartar { get; set; }
+        public List<string>? identity { get; set; } = new List<string>();
+        public List<string>? insurance { get; set; } = new List<string>();
     }
 
     public static class EmployeeExtension

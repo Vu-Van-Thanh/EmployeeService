@@ -85,6 +85,7 @@ namespace EmployeeService.Core.Services
         public async Task<EmployeeInfo> GetEmployeeById(Guid Id)
         {
             Employee employee = await _employeesRepository.GetEmployeeById(Id);
+            EmployeeMedia? empployeeMedia = await _employeeMediaRepository.GetEmployeeMediaIdByType(Id, "Avatar");
             if (employee == null) return null;
             return employee.ToEmployeeInfo();
         }
@@ -92,9 +93,22 @@ namespace EmployeeService.Core.Services
         public async Task<EmployeeInfo?> GetEmployeeIdByUserId(Guid Id)
         {
             Employee? employee = await _employeesRepository.GetEmployeeIdByUserId(Id);
-            if(employee != null )
+            EmployeeInfo employeeInfo = new EmployeeInfo();
+            employeeInfo = employee.ToEmployeeInfo();
+            EmployeeMedia? avartar = await _employeeMediaRepository.GetEmployeeMediaIdByType(Id, "Avatar");
+            EmployeeMedia? FIndentity = await _employeeMediaRepository.GetEmployeeMediaIdByType(Id, "FrontIdentityCard");
+            EmployeeMedia? BIndentity = await _employeeMediaRepository.GetEmployeeMediaIdByType(Id, "BackIdentityCard");
+            EmployeeMedia? FInsurance = await _employeeMediaRepository.GetEmployeeMediaIdByType(Id, "FrontInsuranceCard");
+            EmployeeMedia? BInsurance = await _employeeMediaRepository.GetEmployeeMediaIdByType(Id, "BackInsuranceCard");
+            employeeInfo.avartar = avartar != null ? avartar.MediaUrl : null;
+            employeeInfo.identity.Add(FIndentity != null ? FIndentity.MediaUrl : null);
+            employeeInfo.identity.Add(BIndentity != null ? BIndentity.MediaUrl : null);
+            employeeInfo.insurance.Add(FInsurance != null ? FInsurance.MediaUrl : null);
+            employeeInfo.insurance.Add(BInsurance != null ? BInsurance.MediaUrl : null);
+
+            if (employee != null )
             {
-                return employee.ToEmployeeInfo();
+                return employeeInfo;
 
             }
             return null;
@@ -258,9 +272,11 @@ namespace EmployeeService.Core.Services
             if(!string.IsNullOrEmpty(path))
             {
                 Guid existMedia;
+                List<EmployeeMedia>? employeeMedia;
                 try
                 {
-                    existMedia = await _employeeMediaRepository.GetEmployeeMediaIdByType(employee.EmployeeID, "Avatar");
+
+                    existMedia = (await _employeeMediaRepository.GetEmployeeMediaIdByType(employee.EmployeeID, "Avatar")).EmployeeMediaID;
                 }
                 catch (Exception ex)
                 {
@@ -347,7 +363,7 @@ namespace EmployeeService.Core.Services
             {
                 foreach(IdentityCard item in employee.identityCardImage)
                 {
-                    Guid existMedia = await _employeeMediaRepository.GetEmployeeMediaIdByType(EmployeeId,item.type);
+                    Guid existMedia = (await _employeeMediaRepository.GetEmployeeMediaIdByType(EmployeeId, "Avatar")).EmployeeMediaID;
                     if (existMedia != Guid.Empty)
                     {
                         string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "IdentityCard");
@@ -403,7 +419,8 @@ namespace EmployeeService.Core.Services
             {
                 foreach (InsuranceCard item in employee.insuranceCardImage)
                 {
-                    Guid existMedia = await _employeeMediaRepository.GetEmployeeMediaIdByType(EmployeeId, item.type);
+
+                    Guid existMedia = (await _employeeMediaRepository.GetEmployeeMediaIdByType(EmployeeId, "Avatar")).EmployeeMediaID;
                     if (existMedia != Guid.Empty)
                     {
                         string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "InsuranceCard");

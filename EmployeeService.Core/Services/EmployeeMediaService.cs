@@ -50,7 +50,7 @@ namespace EmployeeService.Core.Services
             // Lưu file vào server và lấy danh sách URL
             if (employeeMedia.Images != null && employeeMedia.Images.Length > 0)
             {
-                mediaUrls = await _fileService.SaveMediaFilesAsync(employeeMedia.Images, "EmployeeMedia");
+                mediaUrls = await _fileService.SaveMediaFilesAsync(employeeMedia.Images, "EmployeeMedia/" + employeeMedia.MediaType.ToString());
                 
             }
 
@@ -79,8 +79,8 @@ namespace EmployeeService.Core.Services
             // Lưu file vào server và lấy danh sách URL
             if (employeeMedia.Images != null && employeeMedia.Images.Length > 0)
             {
-                mediaUrls = await _fileService.SaveMediaFilesAsync(employeeMedia.Images, "EmployeeMedia");
-                mediaId.Add(await _repository.GetEmployeeMediaIdByType(employeeMedia.EmployeeId, employeeMedia.MediaType));
+                mediaUrls = await _fileService.SaveMediaFilesAsync(employeeMedia.Images, "EmployeeMedia/" + employeeMedia.MediaType.ToString());
+                mediaId.Add((await _repository.GetEmployeeMediaIdByType(employeeMedia.EmployeeId, employeeMedia.MediaType)).EmployeeMediaID);
 
             }
 

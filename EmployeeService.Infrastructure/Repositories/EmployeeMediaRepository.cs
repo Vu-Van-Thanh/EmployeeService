@@ -47,12 +47,10 @@ namespace EmployeeService.Infrastructure.Repositories
             }
         }
 
-        public async Task<Guid> GetEmployeeMediaIdByType(Guid employeeId, string Type)
+        public async Task<EmployeeMedia?> GetEmployeeMediaIdByType(Guid employeeId, string Type)
         {
-            return  await _context.EmployeeMedias
-                .Where(e => e.EmployeeID == employeeId && e.MediaType == Type)
-                .Select(e => e.EmployeeMediaID)
-                .FirstOrDefaultAsync();
+            return await _context.EmployeeMedias
+                .Where(e => e.EmployeeID == employeeId && e.MediaType == Type).FirstOrDefaultAsync();
         }
     }
 }

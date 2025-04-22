@@ -78,6 +78,19 @@ namespace EmployeeService.Core.Services
             {
                 employeeInfo.Add(item.ToEmployeeInfo());
             }
+            foreach(var item in employeeInfo)
+            {
+                EmployeeMedia? avartar = await _employeeMediaRepository.GetEmployeeMediaIdByType(Guid.Parse(item.EmployeeID), "Avatar");
+                EmployeeMedia? FIndentity = await _employeeMediaRepository.GetEmployeeMediaIdByType(Guid.Parse(item.EmployeeID), "FrontIdentityCard");
+                EmployeeMedia? BIndentity = await _employeeMediaRepository.GetEmployeeMediaIdByType(Guid.Parse(item.EmployeeID), "BackIdentityCard");
+                EmployeeMedia? FInsurance = await _employeeMediaRepository.GetEmployeeMediaIdByType(Guid.Parse(item.EmployeeID), "FrontInsuranceCard");
+                EmployeeMedia? BInsurance = await _employeeMediaRepository.GetEmployeeMediaIdByType(Guid.Parse(item.EmployeeID), "BackInsuranceCard");
+                item.avartar = avartar != null ? avartar.MediaUrl : null;
+                item.identity.Add(FIndentity != null ? FIndentity.MediaUrl : null);
+                item.identity.Add(BIndentity != null ? BIndentity.MediaUrl : null);
+                item.insurance.Add(FInsurance != null ? FInsurance.MediaUrl : null);
+                item.insurance.Add(BInsurance != null ? BInsurance.MediaUrl : null);
+            }
             return employeeInfo;
         }
 

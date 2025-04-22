@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using EmployeeService.Core.Extension;
 using OrchestratorService.API.Kafka.Producer;
+using EmployeeService.Infrastructure.Kafka.Consumers;
 namespace EmployeeServiceRegistry
 {
     public static class ConfigureServicesExtension
@@ -22,6 +23,8 @@ namespace EmployeeServiceRegistry
 
 
             // thêm service
+            services.AddHostedService<EmployeeConsumer>();  // Đăng ký EmployeeConsumer như một background service
+
             services.AddAutoMapper(typeof(MappingProfile));
             services.AddScoped<IEmployeeService, EmployeeServices>();
             services.AddScoped<IEmployeeRepository, EmployeeRepository>();

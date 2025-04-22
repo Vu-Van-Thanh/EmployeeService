@@ -54,7 +54,9 @@ namespace EmployeeService.Infrastructure.Kafka.Consumers
                         var updateData = JsonSerializer.Deserialize<EmployeeUpdateRequest>(message);
                         await updateHandler.HandleAsync(updateData);
                         break;
-
+                    case "get-all-employee":
+                        Console.WriteLine("hehe {0}", message);
+                        break;
                         // thêm các topic khác nếu cần
                 }
             }

@@ -9,8 +9,9 @@ namespace EmployeeService.Core.Domain.Entities
         public Guid EmployeeID { get; set; }
         public string Position { get; set;}
 
+        public Guid? ManagerID { get; set; }
         public Guid? AccountID { get; set; }
-        public Guid? DepartmentID { get; set; }
+        public string? DepartmentID { get; set; }
 
         [StringLength(20)]
         public string? FirstName { get; set; }

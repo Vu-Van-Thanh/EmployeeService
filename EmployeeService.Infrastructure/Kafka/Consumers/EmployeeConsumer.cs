@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using Azure.Core;
 using Confluent.Kafka;
 using EmployeeService.Core.DTO;
 using EmployeeService.Infrastructure.Kafka.Handlers;
@@ -18,7 +19,7 @@ namespace EmployeeService.Infrastructure.Kafka.Consumers
         public EmployeeConsumer(IConfiguration config, IServiceProvider serviceProvider, IOptions<KafkaSettings> kafkaOptions)
         {
             _kafkaSettings = kafkaOptions.Value;
-            ConsumerConfig consumerConfig = new ConsumerConfig
+            /*ConsumerConfig consumerConfig = new ConsumerConfig
             {
                 BootstrapServers = _kafkaSettings?.BootstrapServers,
                 GroupId = _kafkaSettings?.GroupId,
@@ -29,7 +30,33 @@ namespace EmployeeService.Infrastructure.Kafka.Consumers
                             .Distinct()
                             .ToList();
             _consumer = new ConsumerBuilder<string, string>(consumerConfig).Build();
-            _consumer.Subscribe(allTopics);
+            _consumer.Subscribe(allTopics);*/
+            try
+            {
+                ConsumerConfig consumerConfig = new ConsumerConfig
+                {
+                    BootstrapServers = _kafkaSettings?.BootstrapServers,
+                    GroupId = _kafkaSettings?.GroupId,
+                    AutoOffsetReset = AutoOffsetReset.Earliest
+                };
+
+                List<string> allTopics = _kafkaSettings.ConsumeTopicNames
+                                .SelectMany(entry => entry.Value)
+                                .Distinct()
+                                .ToList();
+
+                // Khởi tạo Kafka consumer
+                _consumer = new ConsumerBuilder<string, string>(consumerConfig).Build();
+                _consumer.Subscribe(allTopics);
+            }
+            catch (Exception ex)
+            {
+                // Log lỗi nếu không thể khởi tạo hoặc subscribe Kafka consumer
+                Console.WriteLine($"Lỗi khi khởi tạo Kafka consumer: {ex.Message}");
+                throw; // Ném lại exception nếu không thể tiếp tục khởi tạo
+            }
+
+            _serviceProvider = serviceProvider;
             _serviceProvider = serviceProvider;
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -55,7 +82,13 @@ namespace EmployeeService.Infrastructure.Kafka.Consumers
                         await updateHandler.HandleAsync(updateData);
                         break;
                     case "get-all-employee":
-                        Console.WriteLine("hehe {0}", message);
+                        Console.WriteLine("Receive : {0}", message);
+                        var filterHandler = scope.ServiceProvider.GetRequiredService<IKafkaHandler<EmployeeFilterDTO>>();
+                        var filterData = JsonSerializer.Deserialize<KafkaRequest<EmployeeFilterDTO>>(message);
+                        EmployeeFilterDTO test = filterData.Filter;
+                        Console.WriteLine("FilterData : {0} - {1} - {2}", test.JobTitle,test.Department,test.ManagerId);
+
+                        await filterHandler.HandleAsync(filterData.Filter);
                         break;
                         // thêm các topic khác nếu cần
                 }

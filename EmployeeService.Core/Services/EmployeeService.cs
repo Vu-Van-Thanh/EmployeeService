@@ -58,7 +58,8 @@ namespace EmployeeService.Core.Services
                 Province = employee.Province,
                 District = employee.District,
                 Commune = employee.Commune,
-                InsuranceNumber = employee.InsuranceNumber
+                InsuranceNumber = employee.InsuranceNumber,
+                ManagerID = employee.ManagerId
 
             };
             await _employeesRepository.AddEmployee(newEmployee);
@@ -351,7 +352,8 @@ namespace EmployeeService.Core.Services
             {
                 exist.Country = employee.Country;
             }
-
+            if(!string.IsNullOrEmpty(employee.Tax)) exist.Tax = employee.Tax;
+            if(!string.IsNullOrEmpty(employee.ManagerID.ToString())) exist.ManagerID = employee.ManagerID;
             if (!string.IsNullOrEmpty(employee.Province)) exist.Province = employee.Province;
             if (!string.IsNullOrEmpty(employee.District)) exist.District = employee.District;
             if (!string.IsNullOrEmpty(employee.Commune)) exist.Commune = employee.Commune;

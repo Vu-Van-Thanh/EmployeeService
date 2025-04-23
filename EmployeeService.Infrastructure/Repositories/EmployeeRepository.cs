@@ -3,6 +3,7 @@ using EmployeeService.Core.Domain.Entities;
 using EmployeeService.Core.RepositoryContracts;
 using EmployeeService.Infrastructure.AppDbContext;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace EmployeeService.Infrastructure.Repositories
@@ -124,6 +125,13 @@ namespace EmployeeService.Infrastructure.Repositories
             return employees
                 .Where(e => property.GetValue(e)?.ToString() == value)
                 .ToList();
+        }
+
+        public async Task<List<Employee>> GetEmployeesByFilter(Expression<Func<Employee, bool>> filter)
+        {
+            return await _dbcontext.Employees
+                             .Where(filter) 
+                             .ToListAsync();
         }
     }
 }

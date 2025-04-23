@@ -8,6 +8,8 @@ using Microsoft.OpenApi.Models;
 using EmployeeService.Core.Extension;
 using OrchestratorService.API.Kafka.Producer;
 using EmployeeService.Infrastructure.Kafka.Consumers;
+using EmployeeService.Core.DTO;
+using EmployeeService.Infrastructure.Kafka.Handlers;
 namespace EmployeeServiceRegistry
 {
     public static class ConfigureServicesExtension
@@ -23,7 +25,6 @@ namespace EmployeeServiceRegistry
 
 
             // thêm service
-            services.AddHostedService<EmployeeConsumer>();  // Đăng ký EmployeeConsumer như một background service
 
             services.AddAutoMapper(typeof(MappingProfile));
             services.AddScoped<IEmployeeService, EmployeeServices>();
@@ -36,7 +37,11 @@ namespace EmployeeServiceRegistry
             services.AddScoped<IEmployeeContractRepository, EmployeeContractRepository>();
             services.AddScoped<IEmployeeContractService, EmployeeContractService>();
             services.AddScoped<IEventProducer, EmployeeProducer>();
+            services.AddScoped<IKafkaHandler<EmployeeFilterDTO>, GetEmployeeHandler>();
+            services.AddScoped<IEventProducer, EmployeeProducer>();
             services.Configure<KafkaSettings>(configuration.GetSection("Kafka"));
+            services.AddHostedService<EmployeeConsumer>();  // Đăng ký EmployeeConsumer như một background service
+
             //services.AddHostedService<EmployeeConsumer>();
 
             // Cấu hình corse

@@ -10,8 +10,9 @@ namespace EmployeeService.Core.DTO
     {
         public string? FirstName { get; set; }
 
+        public Guid? ManagerId { get; set; }
         public string? LastName { get; set; }
-        public Guid? DepartmentId { get; set;}
+        public string? DepartmentId { get; set;}
         public Guid? AccountId { get; set; }
         public string? Phone { get; set; }
         public string? Email { get; set; }

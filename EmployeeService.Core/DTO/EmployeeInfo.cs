@@ -12,7 +12,8 @@ namespace EmployeeService.Core.DTO
     
     public class EmployeeInfo
     {
-        public string EmployeeID { get; set; } 
+        public string EmployeeID { get; set; }
+        public string? ManagerID { get; set; }
         public string? Position { get; set; }
         public string? FirstName { get; set; }
 

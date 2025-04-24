@@ -83,12 +83,11 @@ namespace EmployeeService.Infrastructure.Kafka.Consumers
                         break;
                     case "get-all-employee":
                         Console.WriteLine("Receive : {0}", message);
-                        var filterHandler = scope.ServiceProvider.GetRequiredService<IKafkaHandler<EmployeeFilterDTO>>();
+                        var filterHandler = scope.ServiceProvider.GetRequiredService<IKafkaHandler<KafkaRequest<EmployeeFilterDTO>>>();
                         var filterData = JsonSerializer.Deserialize<KafkaRequest<EmployeeFilterDTO>>(message);
-                        EmployeeFilterDTO test = filterData.Filter;
-                        Console.WriteLine("FilterData : {0} - {1} - {2}", test.JobTitle,test.Department,test.ManagerId);
+                       
 
-                        await filterHandler.HandleAsync(filterData.Filter);
+                        await filterHandler.HandleAsync(filterData);
                         break;
                         // thêm các topic khác nếu cần
                 }

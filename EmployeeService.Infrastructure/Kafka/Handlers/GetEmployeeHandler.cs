@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace EmployeeService.Infrastructure.Kafka.Handlers
 {
-    public class GetEmployeeHandler : IKafkaHandler<EmployeeFilterDTO>
+    public class GetEmployeeHandler : IKafkaHandler<KafkaRequest<EmployeeFilterDTO>>
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IEventProducer _eventProducer;
@@ -19,10 +19,10 @@ namespace EmployeeService.Infrastructure.Kafka.Handlers
             _employeeRepository = employeeRepository;
             _eventProducer = eventProducer;
         }
-        public async Task HandleAsync(EmployeeFilterDTO message)
+        public async Task HandleAsync(KafkaRequest<EmployeeFilterDTO> message)
         {
-            List<Employee> result = await _employeeRepository.GetEmployeesByFilter(message.ToExpression());
-            await _eventProducer.PublishAsync("EmployeeList", null, null, result);
+            List<Employee> result = await _employeeRepository.GetEmployeesByFilter(message.Filter.ToExpression());
+            await _eventProducer.PublishAsync("EmployeeList", null, null,new { correlationId= message.CorrelationId,result=result });
             
 
         }

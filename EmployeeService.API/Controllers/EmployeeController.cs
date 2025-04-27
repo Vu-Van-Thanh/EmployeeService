@@ -4,7 +4,7 @@ using EmployeeService.Core.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
-using OrchestratorService.API.Kafka.Producer;
+using EmployeeService.API.Kafka.Producer;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;

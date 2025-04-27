@@ -1,5 +1,4 @@
 ﻿using System.Text.Json;
-using Azure.Core;
 using Confluent.Kafka;
 using EmployeeService.Core.DTO;
 using EmployeeService.Infrastructure.Kafka.Handlers;

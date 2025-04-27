@@ -3,6 +3,7 @@
 using Confluent.Kafka;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 
 namespace EmployeeService.Infrastructure.Kafka.Consumers.Manual
 {
@@ -31,7 +32,32 @@ namespace EmployeeService.Infrastructure.Kafka.Consumers.Manual
         }
         public Task<T> ConsumeAsync<T>(string topic, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var consumeResult = _consumer.Consume(cancellationToken);
+
+                if (consumeResult == null || string.IsNullOrEmpty(consumeResult.Message.Value))
+                {
+                    throw new Exception("No message received from Kafka topic.");
+                }
+
+                // Deserialize JSON thành T
+                T result = JsonSerializer.Deserialize<T>(consumeResult.Message.Value, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                })!;
+
+                return Task.FromResult(result);
+            }
+            catch (ConsumeException ex)
+            {
+                throw new Exception($"Error consuming message from Kafka: {ex.Error.Reason}", ex);
+            }
+            catch (JsonException ex)
+            {
+                throw new Exception("Failed to deserialize Kafka message.", ex);
+            }
         }
     }
+    
 }

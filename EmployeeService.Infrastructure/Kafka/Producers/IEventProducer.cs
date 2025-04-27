@@ -1,4 +1,4 @@
-﻿namespace OrchestratorService.API.Kafka.Producer
+﻿namespace EmployeeService.API.Kafka.Producer
 {
     public interface IEventProducer
     {

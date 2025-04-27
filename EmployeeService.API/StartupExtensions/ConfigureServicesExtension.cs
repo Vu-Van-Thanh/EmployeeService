@@ -6,7 +6,7 @@ using EmployeeService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using EmployeeService.Core.Extension;
-using OrchestratorService.API.Kafka.Producer;
+using EmployeeService.API.Kafka.Producer;
 using EmployeeService.Infrastructure.Kafka.Consumers;
 using EmployeeService.Core.DTO;
 using EmployeeService.Infrastructure.Kafka.Handlers;
@@ -62,7 +62,7 @@ namespace EmployeeServiceRegistry
             {
                 options.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "User Service API",
+                    Title = "Employee Service API",
                     Version = "v1",
                     Description = "API quản lý người dùng trong hệ thống microservices",
                     Contact = new OpenApiContact

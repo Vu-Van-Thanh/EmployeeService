@@ -3,7 +3,7 @@ using EmployeeService.Infrastructure.Kafka;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
 
-namespace OrchestratorService.API.Kafka.Producer
+namespace EmployeeService.API.Kafka.Producer
 {
     public class EmployeeProducer : IEventProducer
     {

@@ -70,22 +70,15 @@ namespace EmployeeService.Infrastructure.Kafka.Consumers
                 switch (topic)
                 {
                     case "employee-import":
-                        var importHandler = scope.ServiceProvider.GetRequiredService<IKafkaHandler<EmployeeImportDTO>>();
-                        var importData = JsonSerializer.Deserialize<EmployeeImportDTO>(message);
+                        var importHandler = scope.ServiceProvider.GetRequiredService<IKafkaHandler<KafkaRequest<StartImportEmployee>>>();
+                        var importData = JsonSerializer.Deserialize<KafkaRequest<StartImportEmployee>>(message);
                         await importHandler.HandleAsync(importData);
                         break;
 
-                    case "employee-update":
-                        var updateHandler = scope.ServiceProvider.GetRequiredService<IKafkaHandler<EmployeeUpdateRequest>>();
-                        var updateData = JsonSerializer.Deserialize<EmployeeUpdateRequest>(message);
-                        await updateHandler.HandleAsync(updateData);
-                        break;
                     case "get-all-employee":
                         Console.WriteLine("Receive : {0}", message);
                         var filterHandler = scope.ServiceProvider.GetRequiredService<IKafkaHandler<KafkaRequest<EmployeeFilterDTO>>>();
                         var filterData = JsonSerializer.Deserialize<KafkaRequest<EmployeeFilterDTO>>(message);
-                       
-
                         await filterHandler.HandleAsync(filterData);
                         break;
                         // thêm các topic khác nếu cần

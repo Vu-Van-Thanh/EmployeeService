@@ -7,9 +7,10 @@ using EmployeeService.Core.DTO;
 
 namespace EmployeeService.Infrastructure.Kafka.Handlers
 {
-    public class EmployeeImportHandler : IKafkaHandler<EmployeeImportDTO>
+    public class EmployeeImportHandler : IKafkaHandler<KafkaRequest<StartImportEmployee>>
     {
-        public Task HandleAsync(EmployeeImportDTO message)
+        
+        public Task HandleAsync(KafkaRequest<StartImportEmployee> message)
         {
             return Task.CompletedTask;
         }

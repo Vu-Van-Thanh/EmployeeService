@@ -192,6 +192,58 @@ namespace EmployeeService.Core.Services
             {
                 newId = Guid.NewGuid();
             }
+            // dữ liệu lương nhân viên
+            SalaryDTO salary = new SalaryDTO();
+            List<BonusDTO> bonus = new List<BonusDTO>();
+            List<DeductionDTO> deduction = new List<DeductionDTO>();
+            List<AdjustmentDTO> adjustment = new List<AdjustmentDTO>();
+            var sheetSalary = package.Workbook.Worksheets[2];
+            var baseSalary = sheetSalary.Cells["C3"].Text.Trim();
+            var baseIndex = sheet.Cells["C4"].Text.Trim();
+            int bonusRow = 5;
+            while (!string.IsNullOrEmpty(sheetSalary.Cells[$"E{bonusRow}"].Text))
+            {
+                var bonusItem = new BonusDTO
+                {
+                    BonusName = sheetSalary.Cells[$"E{bonusRow}"].Text.Trim(),
+                    BonusPercentage = decimal.TryParse(sheetSalary.Cells[$"G{bonusRow}"].Text.Trim(), out var coef) ? coef : 0,
+                    BonusAmount = decimal.TryParse(sheetSalary.Cells[$"I{bonusRow}"].Text.Trim(), out var qty) ? qty : 0
+                };
+                bonus.Add(bonusItem);
+                bonusRow++;
+            }
+            int deductionRow = 5;
+            while (!string.IsNullOrEmpty(sheetSalary.Cells[$"K{deductionRow}"].Text))
+            {
+                var deductionItem = new DeductionDTO
+                {
+                    DeductionName = sheetSalary.Cells[$"K{deductionRow}"].Text.Trim(),
+                    DeductionPercentage = decimal.TryParse(sheetSalary.Cells[$"M{deductionRow}"].Text.Trim(), out var coef) ? coef : 0,
+                    DeductionAmount = decimal.TryParse(sheetSalary.Cells[$"O{deductionRow}"].Text.Trim(), out var qty) ? qty : 0
+                };
+                deduction.Add(deductionItem);
+                deductionRow++;
+            }
+            int adjustmentRow = 5;
+            while (!string.IsNullOrEmpty(sheetSalary.Cells[$"Q{adjustmentRow}"].Text))
+            {
+                var adjustmentItem = new AdjustmentDTO
+                {
+                    AdjustmentName = sheetSalary.Cells[$"Q{adjustmentRow}"].Text.Trim(),
+                    AdjustmentPercentage = decimal.TryParse(sheetSalary.Cells[$"S{adjustmentRow}"].Text.Trim(), out var coef) ? coef : 0,
+                    AdjustmentAmount = decimal.TryParse(sheetSalary.Cells[$"U{adjustmentRow}"].Text.Trim(), out var qty) ? qty : 0
+                };
+                adjustment.Add(adjustmentItem);
+                adjustmentRow++;
+            }
+            
+            salary.BaseSalary = decimal.Parse(baseSalary);
+            salary.BaseIndex = baseIndex;
+            salary.Bonus = bonus;
+            salary.Deduction = deduction;
+            salary.Adjustment = adjustment;
+
+
             // ảnh hồ sơ
             var pictures = sheet.Drawings.OfType<ExcelPicture>().ToList();
             var path = string.Empty;
@@ -267,7 +319,8 @@ namespace EmployeeService.Core.Services
                 Province = province,
                 Country = country,
                 PlaceIssued = placeIssued,
-                PlaceOfBirth = placeOfBirth
+                PlaceOfBirth = placeOfBirth,
+                Salaries = salary
 
             };
             Employee employee = _mapper.Map<Employee>(result);

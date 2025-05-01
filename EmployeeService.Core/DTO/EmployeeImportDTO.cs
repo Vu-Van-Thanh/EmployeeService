@@ -42,7 +42,35 @@ namespace EmployeeService.Core.DTO
         public string? InsuranceNumber { get; set; }
         public List<RelativeDTO>? Relatives { get; set; } = new();
         public List<ExperienceDTO>? experiences { get; set; } = new();
+        public SalaryDTO? Salaries { get; set; } = new();
     }
+    public class SalaryDTO
+    {
+        public decimal(18,2)? BaseSalary { get; set; }
+        public string? BaseIndex { get; set; }
+        public List<BonusDTO>? Bonus { get; set; } = new();
+        public List<DeductionDTO>? Deduction { get; set; } = new();
+        public List<AdjustmentDTO>? Adjustment { get; set; } = new();
+    }
+    public class BonusDTO
+    {
+        public string? BonusName { get; set; }
+        public decimal(10,2)? BonusPercentage { get; set; }
+        public decimal(18,2)? BonusAmount { get; set; }
+    }
+    public class DeductionDTO
+    {
+        public string? DeductionName { get; set; }
+        public decimal(10,2)? DeductionPercentage { get; set; }
+        public decimal(18,2)? DeductionAmount { get; set; }
+    }
+    public class AdjustmentDTO
+    {
+        public string? AdjustmentName { get; set; }
+        public decimal(10,2)? AdjustmentPercentage { get; set; }
+        public decimal(18,2)? AdjustmentAmount { get; set; }
+    }
+
 
     public class RelativeDTO
     {

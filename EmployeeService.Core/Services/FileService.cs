@@ -56,5 +56,15 @@ namespace EmployeeService.Core.Services
             }
             return savedFilePaths;
         }
+
+        public  IFormFile CreateFormFile(byte[] bytes, string fileName)
+        {
+            var stream = new MemoryStream(bytes);
+            return new FormFile(stream, 0, bytes.Length, "file", fileName)
+            {
+            Headers = new HeaderDictionary(),
+            ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            };
+        }
     }
 }

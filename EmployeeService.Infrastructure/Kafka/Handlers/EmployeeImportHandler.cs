@@ -12,7 +12,8 @@ namespace EmployeeService.Infrastructure.Kafka.Handlers
         
         public Task HandleAsync(KafkaRequest<StartImportEmployee> message)
         {
-            return Task.CompletedTask;
+            var fileBytes = Convert.FromBase64String(message.Data.FileContent);
+            v
         }
     }
 }

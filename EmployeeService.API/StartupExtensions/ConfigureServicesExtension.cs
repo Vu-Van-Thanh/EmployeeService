@@ -38,6 +38,7 @@ namespace EmployeeServiceRegistry
             services.AddScoped<IEmployeeContractService, EmployeeContractService>();
             services.AddScoped<IEventProducer, EmployeeProducer>();
             services.AddScoped<IKafkaHandler<KafkaRequest<EmployeeFilterDTO>>, GetEmployeeHandler>();
+            services.AddScoped<IKafkaHandler<KafkaRequest<StartImportEmployee>>, EmployeeImportHandler>();
             services.AddScoped<IEventProducer, EmployeeProducer>();
             services.Configure<KafkaSettings>(configuration.GetSection("Kafka"));
             services.AddHostedService<EmployeeConsumer>();  // Đăng ký EmployeeConsumer như một background service

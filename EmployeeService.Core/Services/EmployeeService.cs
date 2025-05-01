@@ -208,7 +208,6 @@ namespace EmployeeService.Core.Services
                     extension = ".png";
                 }
 
-                // Đặt tên file ảnh: FirstLast_ID.extension
                 string imageName = $"{firstName}_{lastName}_{(id == null ? newId.ToString() : id.ToString())}{extension}";
 
                 // Đường dẫn tuyệt đối và tương đối
@@ -321,6 +320,17 @@ namespace EmployeeService.Core.Services
                 }
                
             }
+            stream.Position = 0; 
+            var profileFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "EmployeeProfiles");
+            if (!Directory.Exists(profileFolder))
+            {
+                Directory.CreateDirectory(profileFolder);
+            }
+
+            var profileFileName = $"{firstName}_{lastName}_{(id == null ? newId.ToString() : id.ToString())}.xlsx";
+            var profilePath = Path.Combine(profileFolder, profileFileName);
+
+            await File.WriteAllBytesAsync(profilePath, stream.ToArray());
             return result;
 
         }

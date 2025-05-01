@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using EmployeeService.API.Kafka.Producer;
 using EmployeeService.Core.DTO;
 using EmployeeService.Core.Services;
+using EmployeeService.Infrastructure.Kafka.KafkaEntity;
+using Microsoft.AspNetCore.Http;
 
 namespace EmployeeService.Infrastructure.Kafka.Handlers
 {
@@ -13,10 +11,12 @@ namespace EmployeeService.Infrastructure.Kafka.Handlers
         
         private readonly IFileService _fileService;
         private readonly IEmployeeService _employeeService;
-        public EmployeeImportHandler(IFileService fileService, IEmployeeService employeeService)
+        private readonly IEventProducer _kafkaProducer;
+        public EmployeeImportHandler(IFileService fileService, IEmployeeService employeeService, IEventProducer eventProducer)
         {
             _fileService = fileService;
             _employeeService = employeeService;
+            _kafkaProducer = eventProducer;
         }
         public async Task HandleAsync(KafkaRequest<StartImportEmployee> message)
         {
@@ -33,7 +33,7 @@ namespace EmployeeService.Infrastructure.Kafka.Handlers
                 Timestamp = DateTime.UtcNow,
                 Filter = result
             };
-            await _kafkaProducer.ProduceAsync("ImportedEmployee",null,"ImportedEmployee",kafkaResponse);
+            await _kafkaProducer.PublishAsync("ImportedEmployee",null,"ImportedEmployee",kafkaResponse);
 
         }
 

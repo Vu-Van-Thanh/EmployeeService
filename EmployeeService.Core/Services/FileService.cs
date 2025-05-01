@@ -4,12 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 
 namespace EmployeeService.Core.Services
 {
     public interface IFileService
     {
         Task<List<string>> SaveMediaFilesAsync(IFormFile[] mediaFiles, string folderName);
+        IFormFile CreateFormFile(byte[] bytes, string fileName);
         
     }
     public class FileService : IFileService

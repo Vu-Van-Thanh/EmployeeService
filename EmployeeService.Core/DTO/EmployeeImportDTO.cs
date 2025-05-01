@@ -46,7 +46,7 @@ namespace EmployeeService.Core.DTO
     }
     public class SalaryDTO
     {
-        public decimal(18,2)? BaseSalary { get; set; }
+        public decimal? BaseSalary { get; set; }
         public string? BaseIndex { get; set; }
         public List<BonusDTO>? Bonus { get; set; } = new();
         public List<DeductionDTO>? Deduction { get; set; } = new();
@@ -55,20 +55,20 @@ namespace EmployeeService.Core.DTO
     public class BonusDTO
     {
         public string? BonusName { get; set; }
-        public decimal(10,2)? BonusPercentage { get; set; }
-        public decimal(18,2)? BonusAmount { get; set; }
+        public decimal? BonusPercentage { get; set; }
+        public decimal? BonusAmount { get; set; }
     }
     public class DeductionDTO
     {
         public string? DeductionName { get; set; }
-        public decimal(10,2)? DeductionPercentage { get; set; }
-        public decimal(18,2)? DeductionAmount { get; set; }
+        public decimal? DeductionPercentage { get; set; }
+        public decimal? DeductionAmount { get; set; }
     }
     public class AdjustmentDTO
     {
         public string? AdjustmentName { get; set; }
-        public decimal(10,2)? AdjustmentPercentage { get; set; }
-        public decimal(18,2)? AdjustmentAmount { get; set; }
+        public decimal? AdjustmentPercentage { get; set; }
+        public decimal? AdjustmentAmount { get; set; }
     }
 
 

@@ -20,12 +20,26 @@ namespace EmployeeService.Infrastructure.Kafka.Handlers
         }
         public async Task HandleAsync(KafkaRequest<StartImportEmployee> message)
         {
-            var fileContent = message.Filter.FileContent;
-            var base64Content = Convert.FromBase64String(fileContent);
-            var fileBytes = base64Content.ToArray();
-            var fileName = $"EmployeeImport_{Guid.NewGuid()}.xlsx";
-            IFormFile file = _fileService.CreateFormFile(fileBytes, fileName);
-            EmployeeImportDTO result = await _employeeService.ImportProfileFromExcelAsync(file);
+            var filepath = message.Filter.FilePath;
+            var fileName = message.Filter.FileName;
+            var sever = message.Filter.Sever;
+            var fileUrl = $"{sever}/{filepath}".Replace("\\", "/");
+            byte[] fileBytes;
+            using (var httpClient = new HttpClient())
+            {
+                var response = await httpClient.GetAsync(fileUrl);
+                if (!response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine($"❌ Failed to download file from: {fileUrl}");
+                    return;
+                }
+
+                fileBytes = await response.Content.ReadAsByteArrayAsync();
+            }
+
+            var formFile = _fileService.CreateFormFile(fileBytes, fileName);
+
+            EmployeeImportDTO result = await _employeeService.ImportProfileFromExcelAsync(formFile);
             KafkaResponse<EmployeeImportDTO> kafkaResponse = new KafkaResponse<EmployeeImportDTO>
             {
                 RequestType = "ImportedEmployee",

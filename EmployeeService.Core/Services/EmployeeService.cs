@@ -18,7 +18,7 @@ namespace EmployeeService.Core.Services
         Task<Guid> AddEmployee(EmployeeAddRequest employee);
         Task<EmployeeInfo?> GetEmployeeIdByUserId(Guid Id);
         Task<bool> DeleteEmployee(Guid employeeId);
-        Task<EmployeeImportDTO> ImportProfileFromExcelAsync(IFormFile file);
+        Task<EmployeeImportDTO> ImportProfileFromExcelAsync(byte[] filebytes, string filename);
 
     }
     public class EmployeeServices : IEmployeeService
@@ -135,13 +135,22 @@ namespace EmployeeService.Core.Services
             return em.Select(em => em.ToEmployeeInfo()).ToList();
         }
 
-        public async Task<EmployeeImportDTO> ImportProfileFromExcelAsync(IFormFile file)
+        public async Task<EmployeeImportDTO> ImportProfileFromExcelAsync(byte[] fileBytes, string fileName)
         {
-            if (file == null || file.Length == 0)
+
+            if (fileBytes == null || fileBytes.Length == 0)
                 throw new Exception("File Excel không hợp lệ.");
 
-            using var stream = new MemoryStream();
-            await file.CopyToAsync(stream);
+            // lưu file
+            var tempFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "EmployeeProfile");
+            if (!Directory.Exists(tempFolder))
+                Directory.CreateDirectory(tempFolder);
+
+            var tempFilePath = Path.Combine(tempFolder, $"{fileName}.xlsx");
+            await File.WriteAllBytesAsync(tempFilePath, fileBytes);
+
+
+            using var stream = new FileStream(tempFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
             // ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             using var package = new ExcelPackage(stream);
             var sheet = package.Workbook.Worksheets[0];
@@ -175,7 +184,17 @@ namespace EmployeeService.Core.Services
             var address = sheet.Cells["K8"].Text.Trim();
             var placeIssued = sheet.Cells["V5"].Text.Trim();
             var placeOfBirth = sheet.Cells["P4"].Text.Trim();
-            Guid? id = Guid.Parse(sheet.Cells["K5"].Text.Trim());
+            string idString = sheet.Cells["K5"].Text.Trim();
+            Guid? id = null;
+            if (Guid.TryParse(idString, out var parsedId))
+            {
+                id = parsedId;
+            }
+            else
+            {
+                // Nếu không hợp lệ, có thể gán giá trị mặc định (Guid.Empty) hoặc tạo Guid mới
+                id = Guid.Empty;
+            }
             Guid? newId = Guid.Empty;
             // xử lý quê quán
             string[] nativeLand = sheet.Cells["K7"].Text.Trim().Split("-");
@@ -188,9 +207,11 @@ namespace EmployeeService.Core.Services
             var bankAccountOwner = sheet.Cells["P12"].Text.Trim();
             var bankAccountName = sheet.Cells["Y12"].Text.Trim();
             var vehical = sheet.Cells["H13"].Text.Trim() + " " + sheet.Cells["U13"].Text.Trim();
-            if (id == null)
+            if (id == null || id == Guid.Empty) 
             {
-                newId = Guid.NewGuid();
+                Console.WriteLine("Set id nhan vien moi  = {0} ", fileName);
+                newId = Guid.Parse(fileName);
+                id = newId;
             }
             // dữ liệu lương nhân viên
             SalaryDTO salary = new SalaryDTO();
@@ -324,29 +345,41 @@ namespace EmployeeService.Core.Services
 
             };
             Employee employee = _mapper.Map<Employee>(result);
+            Console.WriteLine("ZZZZZZZZZZZZZZ employee {0}", employee);
             EmployeeMedia media;
             
-            if(id == null)
+            if(newId != Guid.Empty)
             {
                 await  _employeesRepository.AddEmployee(employee);
-                
+                Console.WriteLine("Vao add !!!!!!!!!");
             }
             else
             {
                await  _employeesRepository.UpdateEmployee(employee);
+                Console.WriteLine("Vao update !!!!!!!!!");
             }
             if(!string.IsNullOrEmpty(path))
             {
-                Guid existMedia;
+                Guid existMedia = Guid.Empty;
                 List<EmployeeMedia>? employeeMedia;
                 try
                 {
 
-                    existMedia = (await _employeeMediaRepository.GetEmployeeMediaIdByType(employee.EmployeeID, "Avatar")).EmployeeMediaID;
+                    var employeeMediaResult = await _employeeMediaRepository.GetEmployeeMediaIdByType(employee.EmployeeID, "Avatar");
+
+                    
+                    if (employeeMediaResult != null && employeeMediaResult.EmployeeMediaID != Guid.Empty)
+                    {
+                        existMedia = employeeMediaResult.EmployeeMediaID; 
+                    }
+                    else
+                    {
+                        existMedia = Guid.Empty; 
+                    }
                 }
                 catch (Exception ex)
                 {
-                    existMedia = Guid.Empty;
+                    Console.WriteLine($"❌ Error: {ex.Message}");
                 }
                
                 if(existMedia == Guid.Empty)
@@ -373,17 +406,7 @@ namespace EmployeeService.Core.Services
                 }
                
             }
-            stream.Position = 0; 
-            var profileFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "EmployeeProfiles");
-            if (!Directory.Exists(profileFolder))
-            {
-                Directory.CreateDirectory(profileFolder);
-            }
-
-            var profileFileName = $"{firstName}_{lastName}_{(id == null ? newId.ToString() : id.ToString())}.xlsx";
-            var profilePath = Path.Combine(profileFolder, profileFileName);
-
-            await File.WriteAllBytesAsync(profilePath, stream.ToArray());
+            
             return result;
 
         }

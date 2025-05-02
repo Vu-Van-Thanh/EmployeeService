@@ -20,26 +20,37 @@ namespace EmployeeService.Infrastructure.Kafka.Handlers
         }
         public async Task HandleAsync(KafkaRequest<StartImportEmployee> message)
         {
+            Console.WriteLine($"✅ Start Import Employee from file: {message.Filter.FilePath}");
             var filepath = message.Filter.FilePath;
             var fileName = message.Filter.FileName;
             var sever = message.Filter.Sever;
             var fileUrl = $"{sever}/{filepath}".Replace("\\", "/");
             byte[] fileBytes;
-            using (var httpClient = new HttpClient())
+            try
             {
-                var response = await httpClient.GetAsync(fileUrl);
-                if (!response.IsSuccessStatusCode)
+                using (var httpClient = new HttpClient())
                 {
-                    Console.WriteLine($"❌ Failed to download file from: {fileUrl}");
-                    return;
+                    var response = await httpClient.GetAsync(fileUrl);
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        Console.WriteLine($"❌ Failed to download file from: {fileUrl}");
+                        return;
+                    }
+
+                    fileBytes = await response.Content.ReadAsByteArrayAsync();
+                    Console.WriteLine($"✅ File downloaded successfully from: {fileUrl}");
                 }
 
-                fileBytes = await response.Content.ReadAsByteArrayAsync();
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"❌ Error while processing file: {ex.Message}");
+                return;
+            }
+            
+            Guid employeeId = Guid.NewGuid();
 
-            var formFile = _fileService.CreateFormFile(fileBytes, fileName);
-
-            EmployeeImportDTO result = await _employeeService.ImportProfileFromExcelAsync(formFile);
+            EmployeeImportDTO result = await _employeeService.ImportProfileFromExcelAsync(fileBytes, employeeId.ToString());
             KafkaResponse<EmployeeImportDTO> kafkaResponse = new KafkaResponse<EmployeeImportDTO>
             {
                 RequestType = "ImportedEmployee",

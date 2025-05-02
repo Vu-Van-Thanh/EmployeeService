@@ -70,6 +70,7 @@ namespace EmployeeService.Infrastructure.Kafka.Consumers
                 switch (topic)
                 {
                     case "employee-import":
+                        Console.WriteLine("Receive : {0}", message);
                         var importHandler = scope.ServiceProvider.GetRequiredService<IKafkaHandler<KafkaRequest<StartImportEmployee>>>();
                         var importData = JsonSerializer.Deserialize<KafkaRequest<StartImportEmployee>>(message);
                         await importHandler.HandleAsync(importData);

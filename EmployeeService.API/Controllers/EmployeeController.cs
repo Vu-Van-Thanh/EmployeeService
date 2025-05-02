@@ -112,7 +112,11 @@ namespace EmployeeService.API.Controllers
         [HttpPost("import-profile")]
         public async Task<IActionResult> ImportEmployee ( IFormFile formFile)
         {
-            EmployeeImportDTO result = await _employeeService.ImportProfileFromExcelAsync(formFile);
+            var memoryStream = new MemoryStream();
+            await formFile.CopyToAsync(memoryStream);
+            byte[] fileByte = memoryStream.ToArray();
+            Guid employeeId = Guid.NewGuid();
+            EmployeeImportDTO result = await _employeeService.ImportProfileFromExcelAsync(fileByte,employeeId.ToString());
             await _eventProducer.PublishAsync("employee-created", null, "employee-imported", result);
             return Ok(result);
         }

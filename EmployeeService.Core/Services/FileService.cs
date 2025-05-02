@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
+﻿using Microsoft.AspNetCore.Http;
+
 
 namespace EmployeeService.Core.Services
 {
     public interface IFileService
     {
         Task<List<string>> SaveMediaFilesAsync(IFormFile[] mediaFiles, string folderName);
-        IFormFile CreateFormFile(byte[] bytes, string fileName);
         
     }
     public class FileService : IFileService
@@ -59,14 +53,6 @@ namespace EmployeeService.Core.Services
             return savedFilePaths;
         }
 
-        public  IFormFile CreateFormFile(byte[] bytes, string fileName)
-        {
-            var stream = new MemoryStream(bytes);
-            return new FormFile(stream, 0, bytes.Length, "file", fileName)
-            {
-            Headers = new HeaderDictionary(),
-            ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            };
-        }
+       
     }
 }

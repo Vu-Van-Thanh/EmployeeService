@@ -185,29 +185,25 @@ namespace EmployeeService.Core.Services
             var placeIssued = sheet.Cells["V5"].Text.Trim();
             var placeOfBirth = sheet.Cells["P4"].Text.Trim();
             string idString = sheet.Cells["K5"].Text.Trim();
-            Guid? id = null;
+            Guid id = Guid.Empty;
             if (Guid.TryParse(idString, out var parsedId))
             {
                 id = parsedId;
             }
-            else
-            {
-                // Nếu không hợp lệ, có thể gán giá trị mặc định (Guid.Empty) hoặc tạo Guid mới
-                id = Guid.Empty;
-            }
-            Guid? newId = Guid.Empty;
+           
+            Guid newId = Guid.Empty;
             // xử lý quê quán
             string[] nativeLand = sheet.Cells["K7"].Text.Trim().Split("-");
             var commune = nativeLand[1].Trim();
             var district = nativeLand[2].Trim();
             var province = nativeLand[3].Trim();
             var country = nativeLand[4].Trim();
-
+            var position = sheet.Cells["V5"].Text.Trim();
             var tax = sheet.Cells["H11"].Text.Trim();
             var bankAccountOwner = sheet.Cells["P12"].Text.Trim();
             var bankAccountName = sheet.Cells["Y12"].Text.Trim();
             var vehical = sheet.Cells["H13"].Text.Trim() + " " + sheet.Cells["U13"].Text.Trim();
-            if (id == null || id == Guid.Empty) 
+            if (id == Guid.Empty) 
             {
                 Console.WriteLine("Set id nhan vien moi  = {0} ", fileName);
                 newId = Guid.Parse(fileName);
@@ -220,8 +216,8 @@ namespace EmployeeService.Core.Services
             List<AdjustmentDTO> adjustment = new List<AdjustmentDTO>();
             var sheetSalary = package.Workbook.Worksheets[2];
             var baseSalary = sheetSalary.Cells["C3"].Text.Trim();
-            var baseIndex = sheet.Cells["C4"].Text.Trim();
-            int bonusRow = 5;
+            var baseIndex = sheetSalary.Cells["C4"].Text.Trim();
+            int bonusRow = 4;
             while (!string.IsNullOrEmpty(sheetSalary.Cells[$"E{bonusRow}"].Text))
             {
                 var bonusItem = new BonusDTO
@@ -233,7 +229,7 @@ namespace EmployeeService.Core.Services
                 bonus.Add(bonusItem);
                 bonusRow++;
             }
-            int deductionRow = 5;
+            int deductionRow = 4;
             while (!string.IsNullOrEmpty(sheetSalary.Cells[$"K{deductionRow}"].Text))
             {
                 var deductionItem = new DeductionDTO
@@ -245,7 +241,7 @@ namespace EmployeeService.Core.Services
                 deduction.Add(deductionItem);
                 deductionRow++;
             }
-            int adjustmentRow = 5;
+            int adjustmentRow = 4;
             while (!string.IsNullOrEmpty(sheetSalary.Cells[$"Q{adjustmentRow}"].Text))
             {
                 var adjustmentItem = new AdjustmentDTO
@@ -344,7 +340,31 @@ namespace EmployeeService.Core.Services
                 Salaries = salary
 
             };
-            Employee employee = _mapper.Map<Employee>(result);
+            Employee employee = new Employee
+            {
+                EmployeeID = newId != Guid.Empty ? newId : id,
+                FirstName = firstName,
+                LastName = lastName,
+                DateOfBirth = birthDate,
+                AccountID = Guid.Empty,
+                ManagerID = Guid.Empty,
+                DepartmentID = "",
+                Position = position,
+                Gender = GenderOptions.Male,
+                Tax = tax,
+                Address = address,
+                Nationality = country,
+                Ethnic = ethnic,
+                Religion = "",
+                PlaceOfBirth = placeOfBirth,
+                IndentityCard = identitycard,
+                PlaceIssued = placeIssued,
+                Country = country,
+                Province = province,
+                District = district,
+                Commune = commune,
+                InsuranceNumber = insuranceNumber
+            };
             Console.WriteLine("ZZZZZZZZZZZZZZ employee {0}", employee);
             EmployeeMedia media;
             

@@ -198,6 +198,13 @@ namespace EmployeeService.Core.Services
             var district = nativeLand[2].Trim();
             var province = nativeLand[3].Trim();
             var country = nativeLand[4].Trim();
+            var department = sheet.Cells["Q9"].Text.Trim();
+            var CBQL = sheet.Cells["AA9"].Text.Trim();
+            Guid CBQLID = Guid.Empty;
+            if(Guid.TryParse(CBQL, out var parsedId1))
+            {
+                CBQLID = parsedId1;
+            }
             var position = sheet.Cells["V5"].Text.Trim();
             var tax = sheet.Cells["H11"].Text.Trim();
             var bankAccountOwner = sheet.Cells["P12"].Text.Trim();
@@ -347,8 +354,8 @@ namespace EmployeeService.Core.Services
                 LastName = lastName,
                 DateOfBirth = birthDate,
                 AccountID = Guid.Empty,
-                ManagerID = Guid.Empty,
-                DepartmentID = "",
+                ManagerID = CBQLID != Guid.Empty ? CBQLID : Guid.Empty,
+                DepartmentID = department,
                 Position = position,
                 Gender = GenderOptions.Male,
                 Tax = tax,
@@ -365,18 +372,15 @@ namespace EmployeeService.Core.Services
                 Commune = commune,
                 InsuranceNumber = insuranceNumber
             };
-            Console.WriteLine("ZZZZZZZZZZZZZZ employee {0}", employee);
             EmployeeMedia media;
             
             if(newId != Guid.Empty)
             {
                 await  _employeesRepository.AddEmployee(employee);
-                Console.WriteLine("Vao add !!!!!!!!!");
             }
             else
             {
                await  _employeesRepository.UpdateEmployee(employee);
-                Console.WriteLine("Vao update !!!!!!!!!");
             }
             if(!string.IsNullOrEmpty(path))
             {

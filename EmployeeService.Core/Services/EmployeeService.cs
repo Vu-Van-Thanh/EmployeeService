@@ -17,6 +17,7 @@ namespace EmployeeService.Core.Services
         Task<List<EmployeeInfo>> GetEmployeesByFeature(string feature, string value = "All");
         Task<Guid> AddEmployee(EmployeeAddRequest employee);
         Task<EmployeeInfo?> GetEmployeeIdByUserId(Guid Id);
+        Task<List<EmployeeInfo>> GetEmployeeByFilter(EmployeeFilterDTO filter);
         Task<bool> DeleteEmployee(Guid employeeId);
         Task<EmployeeImportDTO> ImportProfileFromExcelAsync(byte[] filebytes, string filename);
 
@@ -95,6 +96,11 @@ namespace EmployeeService.Core.Services
             return employeeInfo;
         }
 
+        public async Task<List<EmployeeInfo>> GetEmployeeByFilter(EmployeeFilterDTO filter)
+        {
+            List<Employee> employee = await  _employeesRepository.GetEmployeesByFilter(filter.ToExpression());
+            return employee.Select(em => em.ToEmployeeInfo()).ToList();
+        }
 
         public async Task<EmployeeInfo> GetEmployeeById(Guid Id)
         {

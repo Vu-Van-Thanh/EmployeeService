@@ -34,6 +34,17 @@ namespace EmployeeService.API.Controllers
             return Ok(employees);
         }
 
+        [HttpGet("filter-employee")]
+        public async Task<ActionResult<IEnumerable<EmployeeInfo>>> GetEmployeeByFilter(EmployeeFilterDTO employeeFilter)
+        {
+           
+            var employees = await _employeeService.GetEmployeeByFilter(employeeFilter);
+            if (employees == null)
+                return NotFound("No employees found with the given filter");
+
+            return Ok(employees);
+        }
+
         /// <summary>
         /// Lấy thông tin chi tiết của một nhân viên
         /// </summary>

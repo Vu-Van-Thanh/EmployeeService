@@ -56,7 +56,20 @@ namespace EmployeeService.Infrastructure.Kafka.Consumers
             }
 
             _serviceProvider = serviceProvider;
-            _serviceProvider = serviceProvider;
+        }
+
+
+        // Phương thức để tạo consumer với CorrelationId làm GroupId
+        private IConsumer<string, string> CreateConsumer(string correlationId)
+        {
+            var consumerConfig = new ConsumerConfig
+            {
+                BootstrapServers = _kafkaSettings?.BootstrapServers,
+                GroupId = $"employee-consumer-{correlationId}",  
+                AutoOffsetReset = AutoOffsetReset.Earliest
+            };
+
+            return new ConsumerBuilder<string, string>(consumerConfig).Build();
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {

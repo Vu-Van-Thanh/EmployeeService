@@ -13,15 +13,20 @@ namespace EmployeeService.Core.DTO
         public string? Department { get; set; }
         public string? JobTitle { get; set; }
         public string? ManagerId { get; set; }
+        public string? EmployeeId { get; set; }
 
         public Expression<Func<Employee, bool>> ToExpression()
         {
+            List<Guid> employeeIds = string.IsNullOrEmpty(EmployeeId)
+              ? new List<Guid>()
+              : EmployeeId.Split(',').Select(id => Guid.Parse(id.Trim())).ToList();
             Guid? managerId = string.IsNullOrEmpty(ManagerId) ? null : Guid.Parse(ManagerId);
 
             return employee =>
                 (string.IsNullOrEmpty(Department) || employee.DepartmentID == Department) &&
                 (string.IsNullOrEmpty(JobTitle) || employee.Position == JobTitle) &&
-                (!managerId.HasValue || employee.ManagerID == managerId.Value);
+                (!managerId.HasValue || employee.ManagerID == managerId.Value) &&
+                 (employeeIds.Count == 0 || employeeIds.Contains(employee.EmployeeID));
         }
     }
 }

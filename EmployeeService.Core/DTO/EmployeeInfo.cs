@@ -13,6 +13,7 @@ namespace EmployeeService.Core.DTO
     public class EmployeeInfo
     {
         public string EmployeeID { get; set; }
+        public string? DepartmentID { get; set; }
         public string? ManagerID { get; set; }
         public string? Position { get; set; }
         public string? FirstName { get; set; }
@@ -57,6 +58,7 @@ namespace EmployeeService.Core.DTO
             return new EmployeeInfo
             {
                 EmployeeID = employee.EmployeeID.ToString(),
+                DepartmentID = employee.DepartmentID,
                 FirstName = employee.FirstName,
                 LastName = employee.LastName,
                 DateOfBirth = employee.DateOfBirth,

@@ -42,7 +42,7 @@ namespace EmployeeServiceRegistry
             
             services.AddScoped<IEventProducer, EmployeeProducer>();
             services.Configure<KafkaSettings>(configuration.GetSection("Kafka"));
-            services.AddHostedService<EmployeeConsumer>();  
+            //services.AddHostedService<EmployeeConsumer>();  
 
             // Cấu hình corse
             services.AddCors(options =>

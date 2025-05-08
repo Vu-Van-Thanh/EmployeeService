@@ -34,6 +34,23 @@ namespace EmployeeService.API.Controllers
             return Ok(employees);
         }
 
+        [HttpGet("employeeIdList")]
+        public async Task<ActionResult<IEnumerable<string>>> GetEmployeeIdList([FromQuery] EmployeeFilterDTO employeeFilter)
+        {
+            var employees = await _employeeService.GetEmployeeByFilter(employeeFilter);
+            List<EmployeeDepartmentDTO> result = new List<EmployeeDepartmentDTO>();
+            foreach (var employee in employees)
+            {
+                EmployeeDepartmentDTO employeeDepartmentDTO = new EmployeeDepartmentDTO();
+                employeeDepartmentDTO.EmployeeID = employee.EmployeeID;
+                employeeDepartmentDTO.EmployeeName = employee.FirstName + " " + employee.LastName;
+                employeeDepartmentDTO.DepartmentID = employee.DepartmentID;
+                employeeDepartmentDTO.DepartmentName = "";
+                result.Add(employeeDepartmentDTO);
+            }
+            return Ok(result);
+        }
+
         [HttpGet("filter-employee")]
         public async Task<ActionResult<IEnumerable<EmployeeInfo>>> GetEmployeeByFilter(EmployeeFilterDTO employeeFilter)
         {

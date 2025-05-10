@@ -41,10 +41,10 @@ namespace EmployeeService.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddContract([FromBody] EmployeeContractAddRequest contract)
+        public async Task<IActionResult> AddContract([FromForm] EmployeeContractAddRequest contract)
         {
-            await _contractService.UpsertContractAsync(contract);
-            return CreatedAtAction(nameof(GetContractById), new { id = contract.ContractId }, contract);
+            await _contractService.UploadContractFileAsync(contract);
+            return Ok("Thêm hợp đồng thành công");
         }
 
         [HttpPut("{id}")]
@@ -63,5 +63,7 @@ namespace EmployeeService.API.Controllers
             await _contractService.DeleteContractAsync(id);
             return NoContent();
         }
+
+        
     }
 }

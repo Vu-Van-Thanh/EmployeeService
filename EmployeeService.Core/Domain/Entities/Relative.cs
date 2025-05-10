@@ -50,6 +50,8 @@ namespace EmployeeService.Core.Domain.Entities
         public string? District { get; set; }
         [StringLength(40)]
         public string? Commune { get; set; }
+
+        public string? PhoneNumber { get; set; }
         public override string ToString()
         {
             return $"Person ID: {RelativeID}, Person Name: {FirstName + LastName}, Date of Birth: {DateOfBirth?.ToString("MM/dd/yyyy")}, Type : {RelativeType}, Address: {Address}";

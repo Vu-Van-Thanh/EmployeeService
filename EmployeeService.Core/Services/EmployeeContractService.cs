@@ -16,6 +16,7 @@ namespace EmployeeService.Core.Services
         Task<List<EmployeeContractInfo>> GetContractsByEmployeeId(Guid employeeId);
         Task<EmployeeContractInfo> UpsertContractAsync(EmployeeContractAddRequest contract);
         Task DeleteContractAsync(Guid id);
+        Task<bool> UploadContractFileAsync(EmployeeContractAddRequest request);
     }
     public class EmployeeContractService : IEmployeeContractService
     {
@@ -67,7 +68,57 @@ namespace EmployeeService.Core.Services
             await _contractRepository.DeleteContractAsync(id);
         }
 
-       
+        public async  Task<bool> UploadContractFileAsync(EmployeeContractAddRequest request)
+        {
+            if (request.contractFile == null || request.contractFile.Length == 0)
+                return false ;
+
+            try
+            {
+                // Đường dẫn thư mục lưu file
+                string uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "EmployeeContracts");
+
+                // Tạo thư mục nếu chưa tồn tại
+                if (!Directory.Exists(uploadFolder))
+                {
+                    Directory.CreateDirectory(uploadFolder);
+                }
+
+                // Tạo tên file duy nhất
+                Guid contractId = request.ContractId ?? Guid.NewGuid();
+                string fileName = $"{contractId}_{request.EmployeeId}.docx";
+                string filePath = Path.Combine(uploadFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await request.contractFile.CopyToAsync(stream);
+                }
+
+                EmployeeContract employeeContract = new EmployeeContract
+                {
+                    ContractId = contractId,
+                    EmployeeId = request.EmployeeId,
+                    ContractType = request.ContractType,
+                    ContractNumber = request.ContractNumber ?? "",
+                    StartDate = request.StartDate,
+                    EndDate = request.EndDate,
+                    ContractUrl = $"/Uploads/EmployeeContracts/{fileName}",
+                    Position = request.Position,
+                    SalaryBase =  request.SalaryBase,
+                    SalaryIndex = request.SalaryIndex,
+                    Status = request.Status
+                };
+
+                await _contractRepository.UpsertContractAsync(employeeContract);
+
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
+        }
     }
 
 }

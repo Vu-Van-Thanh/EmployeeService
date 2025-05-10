@@ -172,16 +172,26 @@ namespace EmployeeService.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ContractUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid?>("EmployeeId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Position")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("SalaryBase")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<decimal>("SalaryIndex")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<DateTime>("StartDate")
+                    b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
@@ -202,6 +212,8 @@ namespace EmployeeService.Infrastructure.Migrations
                             ContractType = "Full-time",
                             EmployeeId = new Guid("63e29a28-bc90-4cd1-8f9e-ab9834bdde6c"),
                             EndDate = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Position = "Software Engineer",
+                            SalaryBase = 50000m,
                             SalaryIndex = 1.5m,
                             StartDate = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = "Active"
@@ -212,6 +224,8 @@ namespace EmployeeService.Infrastructure.Migrations
                             ContractNumber = "CT0002",
                             ContractType = "Part-time",
                             EmployeeId = new Guid("d05780d4-5742-40ca-8403-0febd44b1555"),
+                            Position = "Architecture Engineer",
+                            SalaryBase = 50000m,
                             SalaryIndex = 1.2m,
                             StartDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = "Active"
@@ -303,6 +317,9 @@ namespace EmployeeService.Infrastructure.Migrations
                     b.Property<string>("Nationality")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PlaceOfBirth")
                         .HasColumnType("nvarchar(max)");

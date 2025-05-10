@@ -22,6 +22,7 @@
     <Folder Include="wwwroot\Uploads\EmployeeProfile\" />
     <Folder Include="wwwroot\Uploads\IdentityCard\" />
     <Folder Include="wwwroot\Uploads\InsuranceCard\" />
+    <Folder Include="wwwroot\Uploads\EmployeeContracts\" />
   </ItemGroup>
 
   <ItemGroup>

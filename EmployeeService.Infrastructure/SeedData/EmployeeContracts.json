@@ -7,16 +7,20 @@
     "StartDate": "2023-01-01T00:00:00",
     "EndDate": "2025-01-01T00:00:00",
     "SalaryIndex": 1.5,
+    "SalaryBase": 50000,
+    "Position" :  "Software Engineer",
     "Status": "Active"
   },
-    {
-        "ContractId": "C3F4DD5A-D9FB-4DF8-AC02-B7128FD52271" ,
-        "EmployeeId": "D05780D4-5742-40CA-8403-0FEBD44B1555",
-        "ContractNumber": "CT0002",
-        "ContractType": "Part-time",
-        "StartDate": "2024-01-01T00:00:00",
-        "EndDate": null,
-        "SalaryIndex": 1.2,
-        "Status": "Active"
-    }
+  {
+    "ContractId": "C3F4DD5A-D9FB-4DF8-AC02-B7128FD52271",
+    "EmployeeId": "D05780D4-5742-40CA-8403-0FEBD44B1555",
+    "ContractNumber": "CT0002",
+    "ContractType": "Part-time",
+    "StartDate": "2024-01-01T00:00:00",
+    "EndDate": null,
+    "SalaryIndex": 1.2,
+    "SalaryBase": 50000,
+    "Position": "Architecture Engineer",
+    "Status": "Active"
+  }
 ]

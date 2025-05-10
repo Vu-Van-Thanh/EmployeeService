@@ -45,7 +45,8 @@ namespace EmployeeService.Core.DTO
                 Country = relative.Country,
                 Province = relative.Province,
                 District = relative.District,
-                Commune = relative.Commune
+                Commune = relative.Commune,
+                PhoneNumber = relative.PhoneNumber
             };
         }
     }

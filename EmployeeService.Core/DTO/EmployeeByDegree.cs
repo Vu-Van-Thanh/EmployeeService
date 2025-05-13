@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace EmployeeService.Core.DTO
 {
-    public class EmployeeByRegion
+    public class EmployeeByDegree
     {
-        public string regionName { get; set; }
+        public string degreeName { get; set; }
         public int employeeCount { get; set; }
     }
 }

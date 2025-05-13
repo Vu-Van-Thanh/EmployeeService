@@ -15,6 +15,7 @@ namespace EmployeeService.Infrastructure.AppDbContext
         public DbSet<EmployeeMedia> EmployeeMedias { get; set; }
         public DbSet<Relative> Relatives { get; set; }
         public DbSet<EmployeeContract> EmployeeContracts { get; set; }
+        public DbSet<Education> Educations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -33,6 +34,8 @@ namespace EmployeeService.Infrastructure.AppDbContext
 
             var employeeContracts = LoadSeedData<EmployeeContract>("SeedData/EmployeeContracts.json");
             builder.Entity<EmployeeContract>().HasData(employeeContracts);
+            var educations = LoadSeedData<Education>("SeedData/Educations.json");
+            builder.Entity<Education>().HasData(educations);
         }
 
         private static List<T> LoadSeedData<T>(string filePath)

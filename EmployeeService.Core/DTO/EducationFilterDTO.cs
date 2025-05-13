@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace EmployeeService.Core.DTO
 {
-    public class EmployeeByRegion
+    public class EducationFilterDTO
     {
-        public string regionName { get; set; }
-        public int employeeCount { get; set; }
+        public string? Degree { get; set; }
     }
 }

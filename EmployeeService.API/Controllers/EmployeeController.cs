@@ -34,6 +34,13 @@ namespace EmployeeService.API.Controllers
             return Ok(employees);
         }
 
+       /* [HttpGet("statistic")]
+        public async Task<ActionResult<IEnumerable<EmployeeByDepartment>>> GetDataStatistic()
+        {
+            
+            
+        }*/
+
         [HttpGet("employeeIdList")]
         public async Task<ActionResult<IEnumerable<string>>> GetEmployeeIdList([FromQuery] EmployeeFilterDTO employeeFilter)
         {

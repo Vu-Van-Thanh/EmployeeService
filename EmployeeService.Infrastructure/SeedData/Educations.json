@@ -1,0 +1,42 @@
+[
+  {
+    "EducationID": "672BBF18-7E34-43B4-812B-9299B2B23DDC",
+    "EmployeeID": "63E29A28-BC90-4CD1-8F9E-AB9834BDDE6C",
+    "Degree": 3,
+    "Major": "Công nghệ thông tin",
+    "School": "Đại học Bách Khoa Hà Nội",
+    "StartDate": "2015-09-01T00:00:00",
+    "EndDate": "2019-06-01T00:00:00",
+    "Description": "Chuyên ngành phần mềm"
+  },
+  {
+    "EducationID": "87C19085-F180-439A-8C79-92976F9C52D6",
+    "EmployeeID": "63E29A28-BC90-4CD1-8F9E-AB9834BDDE6C",
+    "Degree": 3,
+    "Major": "Trí tuệ nhân tạo",
+    "School": "Đại học Công nghệ - ĐHQGHN",
+    "StartDate": "2020-09-01T00:00:00",
+    "EndDate": "2022-06-01T00:00:00",
+    "Description": "Nghiên cứu máy học nâng cao"
+  },
+  {
+    "EducationID": "087694AC-137D-443F-8CE4-5E6AD5BDA70B",
+    "EmployeeID": "D05780D4-5742-40CA-8403-0FEBD44B1555",
+    "Degree": 2,
+    "Major": "Kế toán",
+    "School": "Đại học Kinh tế Quốc dân",
+    "StartDate": "2014-09-01T00:00:00",
+    "EndDate": "2018-06-01T00:00:00",
+    "Description": "Chuyên ngành kế toán doanh nghiệp"
+  },
+  {
+    "EducationID": "2F954C2F-6629-4FAF-8F20-BB9A60BE7C1A",
+    "EmployeeID": "D05780D4-5742-40CA-8403-0FEBD44B1555",
+    "Degree": 3,
+    "Major": "Tài chính",
+    "School": "Học viện Tài chính",
+    "StartDate": "2019-09-01T00:00:00",
+    "EndDate": "2021-06-01T00:00:00",
+    "Description": "Tốt nghiệp loại giỏi"
+  }
+]

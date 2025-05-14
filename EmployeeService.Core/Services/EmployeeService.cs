@@ -102,7 +102,43 @@ namespace EmployeeService.Core.Services
         public async Task<EmployeeStatisticDTO> GetDataStatistic()
         {
             List<Employee> employees = await _employeesRepository.GetAll();
+            int currentYear = DateTime.Now.Year;
             EmployeeStatisticDTO result = new EmployeeStatisticDTO();
+            foreach (Employee employee in employees)
+            {
+                // số lượng nhân viên mới mỗi tháng
+                if (employee.DateIssued == null)
+                {
+                    continue;
+                }
+                DateTime issed = employee.DateIssued.Value;
+
+
+                if (issed.Year == currentYear)
+                {
+                    if (employee.IsActived == true)
+                    {
+
+                        double years = (DateTime.Now - issed).TotalDays / 365;
+
+                        if (years > 10)
+                            result.seniorityEmployees.First(x => x.type == "Trên 10 năm").count++;
+                        else if (years > 5)
+                            result.seniorityEmployees.First(x => x.type == "5-10 năm").count++;
+                        else if (years > 3)
+                            result.seniorityEmployees.First(x => x.type == "3-5 năm").count++;
+                        else if (years > 1)
+                            result.seniorityEmployees.First(x => x.type == "1-3 năm").count++;
+                        else
+                            result.seniorityEmployees.First(x => x.type == "Dưới 1 năm").count++;
+
+
+                    }
+                }
+               
+                
+            }
+            
             result.employeeGender = new EmployeeByGender
             {
                 male = employees.Count(e => e.Gender == GenderOptions.Male),
@@ -202,6 +238,7 @@ namespace EmployeeService.Core.Services
             var employeeGrowthByMonth = new int[12];
             var retentionRate = new double[12];
             var growthRate = new double[12];
+            EmployeeTotal result = new EmployeeTotal();
             foreach (Employee employee in allEmployees)
             {
                // số lượng nhân viên mới mỗi tháng
@@ -212,12 +249,14 @@ namespace EmployeeService.Core.Services
                 DateTime issed = employee.DateIssued.Value;
                 
                
-                if (issed.Year == currentYear && employee.IsActived == true)
+                if (issed.Year == currentYear)
                 {
                     if(employee.IsActived == true)
                     {
                         int month = issed.Month;
                         newEmployeesByMonth[month - 1]++;
+                        
+
                     }
                     else
                     {
@@ -248,14 +287,11 @@ namespace EmployeeService.Core.Services
                 }
 
             }
-            EmployeeTotal result = new EmployeeTotal
-            {
-                employeeGrowthByMonth = employeeGrowthByMonth.ToList(),
-                newEmployeesByMonth = newEmployeesByMonth.ToList(),
-                leaveEmployeesByMonth = leaveEmployeesByMonth.ToList(),
-                retentionRate = retentionRate.ToList(),
-                GrowthRate = growthRate.ToList()
-            };
+            result.employeeGrowthByMonth = employeeGrowthByMonth.ToList();
+                result.newEmployeesByMonth = newEmployeesByMonth.ToList();
+                result.leaveEmployeesByMonth = leaveEmployeesByMonth.ToList();
+                result.retentionRate = retentionRate.ToList();
+                result.GrowthRate = growthRate.ToList();
             return result;
         }
 

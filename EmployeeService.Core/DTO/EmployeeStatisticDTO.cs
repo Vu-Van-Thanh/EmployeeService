@@ -13,6 +13,15 @@ namespace EmployeeService.Core.DTO
         public List<EmployeeByDepartmentAndGender>? employeeByDepartmentAndGender { get; set; }
         public List<EmployeeByDegree>? employeeByDegree { get; set; }
         public List<EmployeeByRegion>? employeeByRegion { get; set; }
+        public List<SeniorityEmployee> seniorityEmployees { get; set; } = new List<SeniorityEmployee>
+        {
+            new SeniorityEmployee { type = "Trên 10 năm", count = 0 },
+            new SeniorityEmployee { type = "5-10 năm", count = 0 },
+            new SeniorityEmployee { type = "3-5 năm", count = 0 },
+            new SeniorityEmployee { type = "1-3 năm", count = 0 },
+            new SeniorityEmployee { type = "Dưới 1 năm", count = 0 }
+        };
+
 
     }
 }

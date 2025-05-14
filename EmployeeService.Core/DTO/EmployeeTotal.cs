@@ -13,5 +13,6 @@ namespace EmployeeService.Core.DTO
         public List<int> leaveEmployeesByMonth { get; set; }
         public List<double> retentionRate { get; set; }
         public List<double> GrowthRate { get; set; }
+        
     }
 }

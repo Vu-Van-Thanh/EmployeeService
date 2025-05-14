@@ -34,6 +34,8 @@ namespace EmployeeServiceRegistry
             services.AddScoped<IFileService, FileService>();
             services.AddScoped<IRelativeRepository, RelativeRepository>();
             services.AddScoped<IRelativeService, RelativeService>();
+            services.AddScoped<IEducationRepository, EducationRepository>();
+            services.AddScoped<IEducationService, EducationService>();
             services.AddScoped<IEmployeeContractRepository, EmployeeContractRepository>();
             services.AddScoped<IEmployeeContractService, EmployeeContractService>();
             services.AddScoped<IEventProducer, EmployeeProducer>();

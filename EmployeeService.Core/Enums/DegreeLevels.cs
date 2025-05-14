@@ -16,6 +16,7 @@ namespace EmployeeService.Core.Enums
         Engineer,  
         Master,   
         Doctor,
-        Professor
+        Professor,
+        Other
     }
 }

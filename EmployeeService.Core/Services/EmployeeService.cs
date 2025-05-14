@@ -20,6 +20,7 @@ namespace EmployeeService.Core.Services
         Task<List<EmployeeInfo>> GetEmployeeByFilter(EmployeeFilterDTO filter);
         Task<bool> DeleteEmployee(Guid employeeId);
         Task<EmployeeImportDTO> ImportProfileFromExcelAsync(byte[] filebytes, string filename);
+        Task<EmployeeStatisticDTO> GetDataStatistic();
 
     }
     public class EmployeeServices : IEmployeeService
@@ -94,6 +95,28 @@ namespace EmployeeService.Core.Services
                 item.insurance.Add(BInsurance != null ? BInsurance.MediaUrl : null);
             }
             return employeeInfo;
+        }
+
+        public async Task<EmployeeStatisticDTO> GetDataStatistic()
+        {
+            List<Employee> employees = await _employeesRepository.GetAll();
+            EmployeeStatisticDTO result = new EmployeeStatisticDTO();
+            result.employeeGender = new EmployeeByGender
+            {
+                male = employees.Count(e => e.Gender == GenderOptions.Male),
+                female = employees.Count(e => e.Gender == GenderOptions.Female)
+            };
+            result.employeeDepartment = employees
+                                .GroupBy(e => e.DepartmentID)
+                                .Select(g => new EmployeeByDepartment
+                                {
+                                    departmentName = g.Key,
+                                    employeeCount = g.Count()
+                                })
+                                .ToList();
+            
+
+
         }
 
         public async Task<List<EmployeeInfo>> GetEmployeeByFilter(EmployeeFilterDTO filter)

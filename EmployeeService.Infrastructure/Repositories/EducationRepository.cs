@@ -49,24 +49,48 @@ namespace EmployeeService.Infrastructure.Repositories
             return await _context.Educations.ToListAsync();
         }
 
-        public Task<List<Education>?> GetEducationByEmployeeId(Guid Id)
+        public async Task<List<Education>?> GetEducationByEmployeeId(Guid Id)
         {
-            throw new NotImplementedException();
+            return await _context.Educations
+                .Where(e => e.EmployeeID == Id)
+                .ToListAsync(); 
         }
 
-        public Task<Education?> GetEducationById(Guid Id)
+        public async Task<Education?> GetEducationById(Guid Id)
         {
-            throw new NotImplementedException();
+            return await _context.Educations
+                .Include(e => e.Employee)
+                .FirstOrDefaultAsync(e => e.EducationID == Id);
         }
 
-        public Task<List<Education>> GetEducationsByFilter(Expression<Func<Education, bool>> filter)
+        public async Task<List<Education>> GetEducationsByFilter(Expression<Func<Education, bool>> filter)
         {
-            throw new NotImplementedException();
+            return  await _context.Educations
+                .Where(filter)
+                .ToListAsync();
         }
 
-        public Task<Guid> UpdateEducation(Education education)
+        public async Task<Guid> UpdateEducation(Education education)
         {
-            throw new NotImplementedException();
+            var existing = await _context.Educations.FindAsync(education.EducationID);
+            if (existing == null)
+            {
+                throw new Exception("Education not found");
+            }
+
+            // Cập nhật các trường cần thiết
+            existing.School = education.School;
+            existing.Degree = education.Degree;
+            existing.Major = education.Major;
+            existing.StartDate = education.StartDate;
+            existing.EndDate = education.EndDate;
+            existing.Description = education.Description;
+
+
+            await _context.SaveChangesAsync();
+
+            return existing.EducationID;
         }
+
     }
 }

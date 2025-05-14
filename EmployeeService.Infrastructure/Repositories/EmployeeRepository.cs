@@ -40,7 +40,7 @@ namespace EmployeeService.Infrastructure.Repositories
 
         public async Task<List<Employee>> GetAll()
         {
-            return await _dbcontext.Employees.ToListAsync();
+            return await _dbcontext.Employees.Include(e => e.Education).ToListAsync();
         }
 
         public async Task<Employee?> GetEmployeeById(Guid Id)

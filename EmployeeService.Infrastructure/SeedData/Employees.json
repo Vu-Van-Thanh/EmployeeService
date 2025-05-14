@@ -20,7 +20,9 @@
         "Province": "Ho Chi Minh",
         "District": "District 1",
         "Commune": "Ben Nghe",
-        "InsuranceNumber": "VN1234567890"
+      "InsuranceNumber": "VN1234567890",
+      "DateIssued": "2015-01-01T00:00:00",
+      "DateExpired" :  null
     },
   {
     "EmployeeID": "D05780D4-5742-40CA-8403-0FEBD44B1555",
@@ -43,6 +45,8 @@
     "Province": "Ha Noi",
     "District": "Hoan Kiem",
     "Commune": "Hang Bac",
-    "InsuranceNumber": "VN0987654321"
+    "InsuranceNumber": "VN0987654321",
+    "DateIssued": "2016-06-15T00:00:00",
+    "DateExpired": null
   }
 ]

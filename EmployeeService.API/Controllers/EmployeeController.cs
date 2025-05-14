@@ -34,12 +34,24 @@ namespace EmployeeService.API.Controllers
             return Ok(employees);
         }
 
-       /* [HttpGet("statistic")]
-        public async Task<ActionResult<IEnumerable<EmployeeByDepartment>>> GetDataStatistic()
+        [HttpGet("statistic")]
+        public async Task<ActionResult<IEnumerable<EmployeeStatisticDTO>>> GetDataStatistic()
         {
-            
-            
-        }*/
+            EmployeeStatisticDTO result = await  _employeeService.GetDataStatistic();
+            if (result == null)
+                return NotFound("No data found");
+            return Ok(result);
+
+        }
+
+        [HttpGet("total-employee")]
+        public async Task<ActionResult<IEnumerable<EmployeeTotal>>> GetEmployeeTotal()
+        {
+            EmployeeTotal result = await _employeeService.GetEmployeeTotal();
+            if (result == null)
+                return NotFound("No data found");
+            return Ok(result);
+        }
 
         [HttpGet("employeeIdList")]
         public async Task<ActionResult<IEnumerable<string>>> GetEmployeeIdList([FromQuery] EmployeeFilterDTO employeeFilter)

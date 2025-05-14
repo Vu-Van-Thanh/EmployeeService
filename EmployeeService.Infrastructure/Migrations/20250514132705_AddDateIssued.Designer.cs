@@ -4,6 +4,7 @@ using EmployeeService.Infrastructure.AppDbContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EmployeeService.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250514132705_AddDateIssued")]
+    partial class AddDateIssued
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -122,9 +125,6 @@ namespace EmployeeService.Infrastructure.Migrations
                     b.Property<string>("Country")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("DateExpired")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime?>("DateIssued")
                         .HasColumnType("datetime2");
 
@@ -156,9 +156,6 @@ namespace EmployeeService.Infrastructure.Migrations
                     b.Property<string>("InsuranceNumber")
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
-
-                    b.Property<bool>("IsActived")
-                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .HasMaxLength(20)
@@ -214,7 +211,6 @@ namespace EmployeeService.Infrastructure.Migrations
                             Gender = 0,
                             IndentityCard = "079203456789",
                             InsuranceNumber = "VN1234567890",
-                            IsActived = true,
                             LastName = "Van A",
                             Nationality = "Việt Nam",
                             PlaceIssued = "HCMC",
@@ -238,7 +234,6 @@ namespace EmployeeService.Infrastructure.Migrations
                             Gender = 1,
                             IndentityCard = "091234567890",
                             InsuranceNumber = "VN0987654321",
-                            IsActived = true,
                             LastName = "Thi B",
                             Nationality = "Việt Nam",
                             PlaceIssued = "Ha Noi",

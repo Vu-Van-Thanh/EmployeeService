@@ -6,6 +6,7 @@ using EmployeeService.Core.RepositoryContracts;
 using Microsoft.AspNetCore.Http;
 using OfficeOpenXml;
 using OfficeOpenXml.Drawing;
+using System.Security.AccessControl;
 
 namespace EmployeeService.Core.Services
 {
@@ -21,6 +22,7 @@ namespace EmployeeService.Core.Services
         Task<bool> DeleteEmployee(Guid employeeId);
         Task<EmployeeImportDTO> ImportProfileFromExcelAsync(byte[] filebytes, string filename);
         Task<EmployeeStatisticDTO> GetDataStatistic();
+        Task<EmployeeTotal> GetEmployeeTotal();
 
     }
     public class EmployeeServices : IEmployeeService
@@ -81,7 +83,7 @@ namespace EmployeeService.Core.Services
             {
                 employeeInfo.Add(item.ToEmployeeInfo());
             }
-            foreach(var item in employeeInfo)
+            foreach (var item in employeeInfo)
             {
                 EmployeeMedia? avartar = await _employeeMediaRepository.GetEmployeeMediaIdByType(Guid.Parse(item.EmployeeID), "Avatar");
                 EmployeeMedia? FIndentity = await _employeeMediaRepository.GetEmployeeMediaIdByType(Guid.Parse(item.EmployeeID), "FrontIdentityCard");
@@ -114,14 +116,41 @@ namespace EmployeeService.Core.Services
                                     employeeCount = g.Count()
                                 })
                                 .ToList();
-            
+            result.employeeByDegree = employees
+                    .SelectMany(e => e.Education)
+                    .Where(ed => ed.Degree != null)
+                    .GroupBy(ed => ed.Degree)
+                    .Select(g => new EmployeeByDegree
+                    {
+                        degreeName = g.Key.ToString(),
+                        employeeCount = g.Count()
+                    }).ToList();
+            result.employeeByRegion = employees
+                            .GroupBy(e => e.Province)
+                    .Select(g => new EmployeeByRegion
+                    {
+                        regionName = g.Key,
+                        employeeCount = g.Count()
+                    }).ToList();
+            result.employeeByDepartmentAndGender = employees
+                    .GroupBy(e => e.DepartmentID)
+                    .Select(g => new EmployeeByDepartmentAndGender
+                    {
+                        departmentName = g.Key ?? "Chưa xác định",
+                        male = g.Count(e => e.Gender == GenderOptions.Male),
+                        female = g.Count(e => e.Gender == GenderOptions.Female)
+                    })
+    .ToList();
+
+
+            return result;
 
 
         }
 
         public async Task<List<EmployeeInfo>> GetEmployeeByFilter(EmployeeFilterDTO filter)
         {
-            List<Employee> employee = await  _employeesRepository.GetEmployeesByFilter(filter.ToExpression());
+            List<Employee> employee = await _employeesRepository.GetEmployeesByFilter(filter.ToExpression());
             return employee.Select(em => em.ToEmployeeInfo()).ToList();
         }
 
@@ -149,7 +178,7 @@ namespace EmployeeService.Core.Services
             employeeInfo.insurance.Add(FInsurance != null ? FInsurance.MediaUrl : null);
             employeeInfo.insurance.Add(BInsurance != null ? BInsurance.MediaUrl : null);
 
-            if (employee != null )
+            if (employee != null)
             {
                 return employeeInfo;
 
@@ -162,6 +191,72 @@ namespace EmployeeService.Core.Services
         {
             List<Employee> em = await _employeesRepository.GetAllEmployeesByFeature(feature, value);
             return em.Select(em => em.ToEmployeeInfo()).ToList();
+        }
+
+        public async Task<EmployeeTotal> GetEmployeeTotal()
+        {
+            List<Employee> allEmployees = await _employeesRepository.GetAll();
+            int currentYear = DateTime.Now.Year;
+            var newEmployeesByMonth = new int[12];
+            var leaveEmployeesByMonth = new int[12];
+            var employeeGrowthByMonth = new int[12];
+            var retentionRate = new double[12];
+            var growthRate = new double[12];
+            foreach (Employee employee in allEmployees)
+            {
+               // số lượng nhân viên mới mỗi tháng
+                if (employee.DateIssued  == null)
+                {
+                    continue;
+                }
+                DateTime issed = employee.DateIssued.Value;
+                
+               
+                if (issed.Year == currentYear && employee.IsActived == true)
+                {
+                    if(employee.IsActived == true)
+                    {
+                        int month = issed.Month;
+                        newEmployeesByMonth[month - 1]++;
+                    }
+                    else
+                    {
+                        if(employee.DateExpired == null)
+                        {
+                            continue;
+                        }
+                        DateTime expired = employee.DateExpired.Value;
+                        int month = expired.Month;
+                        leaveEmployeesByMonth[month - 1]++;
+                    }
+                    
+                }
+               
+
+            }
+            int total = 0;
+            retentionRate[0] = 0;
+            growthRate[0] = 0;
+            for (int i = 0; i < 12; i++)
+            {
+                total += newEmployeesByMonth[i];
+                employeeGrowthByMonth[i] = total;
+                if(i != 0)
+                {
+                    retentionRate[i] = ((employeeGrowthByMonth[i] - newEmployeesByMonth[i]) / employeeGrowthByMonth[i - 1]) * 100;
+                    growthRate[i] = ((employeeGrowthByMonth[i] - employeeGrowthByMonth[i - 1]) / employeeGrowthByMonth[i - 1]) * 100;
+                }
+
+            }
+            EmployeeTotal result = new EmployeeTotal
+            {
+                employeeGrowthByMonth = employeeGrowthByMonth.ToList(),
+                newEmployeesByMonth = newEmployeesByMonth.ToList(),
+                leaveEmployeesByMonth = leaveEmployeesByMonth.ToList(),
+                retentionRate = retentionRate.ToList(),
+                GrowthRate = growthRate.ToList()
+            };
+            return result;
         }
 
         public async Task<EmployeeImportDTO> ImportProfileFromExcelAsync(byte[] fileBytes, string fileName)
@@ -219,7 +314,7 @@ namespace EmployeeService.Core.Services
             {
                 id = parsedId;
             }
-           
+
             Guid newId = Guid.Empty;
             // xử lý quê quán
             string[] nativeLand = sheet.Cells["K7"].Text.Trim().Split("-");
@@ -230,7 +325,7 @@ namespace EmployeeService.Core.Services
             var department = sheet.Cells["Q9"].Text.Trim();
             var CBQL = sheet.Cells["AA9"].Text.Trim();
             Guid CBQLID = Guid.Empty;
-            if(Guid.TryParse(CBQL, out var parsedId1))
+            if (Guid.TryParse(CBQL, out var parsedId1))
             {
                 CBQLID = parsedId1;
             }
@@ -239,7 +334,7 @@ namespace EmployeeService.Core.Services
             var bankAccountOwner = sheet.Cells["P12"].Text.Trim();
             var bankAccountName = sheet.Cells["Y12"].Text.Trim();
             var vehical = sheet.Cells["H13"].Text.Trim() + " " + sheet.Cells["U13"].Text.Trim();
-            if (id == Guid.Empty) 
+            if (id == Guid.Empty)
             {
                 Console.WriteLine("Set id nhan vien moi  = {0} ", fileName);
                 newId = Guid.Parse(fileName);
@@ -289,7 +384,7 @@ namespace EmployeeService.Core.Services
                 adjustment.Add(adjustmentItem);
                 adjustmentRow++;
             }
-            
+
             salary.BaseSalary = decimal.Parse(baseSalary);
             salary.BaseIndex = baseIndex;
             salary.Bonus = bonus;
@@ -399,19 +494,20 @@ namespace EmployeeService.Core.Services
                 Province = province,
                 District = district,
                 Commune = commune,
-                InsuranceNumber = insuranceNumber
+                InsuranceNumber = insuranceNumber,
+                DateIssued = DateTime.Now
             };
             EmployeeMedia media;
-            
-            if(newId != Guid.Empty)
+
+            if (newId != Guid.Empty)
             {
-                await  _employeesRepository.AddEmployee(employee);
+                await _employeesRepository.AddEmployee(employee);
             }
             else
             {
-               await  _employeesRepository.UpdateEmployee(employee);
+                await _employeesRepository.UpdateEmployee(employee);
             }
-            if(!string.IsNullOrEmpty(path))
+            if (!string.IsNullOrEmpty(path))
             {
                 Guid existMedia = Guid.Empty;
                 List<EmployeeMedia>? employeeMedia;
@@ -420,22 +516,22 @@ namespace EmployeeService.Core.Services
 
                     var employeeMediaResult = await _employeeMediaRepository.GetEmployeeMediaIdByType(employee.EmployeeID, "Avatar");
 
-                    
+
                     if (employeeMediaResult != null && employeeMediaResult.EmployeeMediaID != Guid.Empty)
                     {
-                        existMedia = employeeMediaResult.EmployeeMediaID; 
+                        existMedia = employeeMediaResult.EmployeeMediaID;
                     }
                     else
                     {
-                        existMedia = Guid.Empty; 
+                        existMedia = Guid.Empty;
                     }
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine($"❌ Error: {ex.Message}");
                 }
-               
-                if(existMedia == Guid.Empty)
+
+                if (existMedia == Guid.Empty)
                 {
                     media = new EmployeeMedia
                     {
@@ -457,9 +553,9 @@ namespace EmployeeService.Core.Services
                     };
                     await _employeeMediaRepository.UpdateAsync(media);
                 }
-               
+
             }
-            
+
             return result;
 
         }
@@ -491,8 +587,8 @@ namespace EmployeeService.Core.Services
             {
                 exist.Country = employee.Country;
             }
-            if(!string.IsNullOrEmpty(employee.Tax)) exist.Tax = employee.Tax;
-            if(!string.IsNullOrEmpty(employee.ManagerID.ToString())) exist.ManagerID = employee.ManagerID;
+            if (!string.IsNullOrEmpty(employee.Tax)) exist.Tax = employee.Tax;
+            if (!string.IsNullOrEmpty(employee.ManagerID.ToString())) exist.ManagerID = employee.ManagerID;
             if (!string.IsNullOrEmpty(employee.Province)) exist.Province = employee.Province;
             if (!string.IsNullOrEmpty(employee.District)) exist.District = employee.District;
             if (!string.IsNullOrEmpty(employee.Commune)) exist.Commune = employee.Commune;
@@ -515,7 +611,7 @@ namespace EmployeeService.Core.Services
             // cập nhật thông tin các file ảnh
             if (employee.identityCardImage != null)
             {
-                foreach(IdentityCard item in employee.identityCardImage)
+                foreach (IdentityCard item in employee.identityCardImage)
                 {
                     Guid existMedia = (await _employeeMediaRepository.GetEmployeeMediaIdByType(EmployeeId, "Avatar")).EmployeeMediaID;
                     if (existMedia != Guid.Empty)

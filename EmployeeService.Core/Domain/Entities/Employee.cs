@@ -57,6 +57,10 @@ namespace EmployeeService.Core.Domain.Entities
         public string? District { get; set; }
         [StringLength(40)]
         public string? Commune { get; set; }
+
+        public DateTime? DateIssued { get; set; }
+        public DateTime? DateExpired { get; set; }
+        public bool IsActived { get; set; } = true;
         [StringLength(30)]
         public string? InsuranceNumber { get; set; }
         public override string ToString()

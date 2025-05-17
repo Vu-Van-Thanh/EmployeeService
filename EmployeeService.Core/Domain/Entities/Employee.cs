@@ -34,6 +34,7 @@ namespace EmployeeService.Core.Domain.Entities
         public virtual ICollection<EmployeeMedia>? EmployeeMedia { get; set; }
         public virtual ICollection<EmployeeContract>? EmployeeContract { get; set; }
         public virtual ICollection<Education>? Education { get; set; }
+        public virtual ICollection<Relative>? Relative { get; set; }
 
         // Thông tin bổ sung
         [StringLength(100)]

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -52,6 +53,8 @@ namespace EmployeeService.Core.Domain.Entities
         public string? Commune { get; set; }
 
         public string? PhoneNumber { get; set; }
+        [ForeignKey("EmployeeID")]
+        public virtual Employee? Employee { get; set; }
         public override string ToString()
         {
             return $"Person ID: {RelativeID}, Person Name: {FirstName + LastName}, Date of Birth: {DateOfBirth?.ToString("MM/dd/yyyy")}, Type : {RelativeType}, Address: {Address}";

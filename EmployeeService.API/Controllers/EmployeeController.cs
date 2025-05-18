@@ -53,6 +53,16 @@ namespace EmployeeService.API.Controllers
             return Ok(result);
         }
 
+        [HttpGet("employee-department")]
+        public async Task<ActionResult<IEnumerable<EmployeeDepartmentDTO>>> GetEmployeeDepartment()
+        {
+            var result= await _employeeService.GetEmployeeDepartment();
+            
+
+
+            return Ok(result);
+        }
+
         [HttpGet("employeeIdList")]
         public async Task<ActionResult<IEnumerable<string>>> GetEmployeeIdList([FromQuery] EmployeeFilterDTO employeeFilter)
         {

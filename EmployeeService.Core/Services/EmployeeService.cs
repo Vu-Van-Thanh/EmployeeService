@@ -23,6 +23,7 @@ namespace EmployeeService.Core.Services
         Task<EmployeeImportDTO> ImportProfileFromExcelAsync(byte[] filebytes, string filename);
         Task<EmployeeStatisticDTO> GetDataStatistic();
         Task<EmployeeTotal> GetEmployeeTotal();
+        Task<EmployeeDepartment> GetEmployeeDepartment();
 
     }
     public class EmployeeServices : IEmployeeService
@@ -196,6 +197,32 @@ namespace EmployeeService.Core.Services
             EmployeeMedia? empployeeMedia = await _employeeMediaRepository.GetEmployeeMediaIdByType(Id, "Avatar");
             if (employee == null) return null;
             return employee.ToEmployeeInfo();
+        }
+
+        public async Task<EmployeeDepartment> GetEmployeeDepartment()
+        {
+            List<Employee> st = await _employeesRepository.GetAll();
+
+            // Lấy danh sách các DepartmentID duy nhất
+            var departmentIds = st
+                .Select(e => e.DepartmentID.ToString())
+                .Distinct()
+                .ToList();
+
+            // Với mỗi DepartmentID, lấy chuỗi các EmployeeID (phân cách bằng ",")
+            var employeeIdList = departmentIds
+                .Select(deptId =>
+                    string.Join(",", st
+                        .Where(e => e.DepartmentID.ToString() == deptId)
+                        .Select(e => e.EmployeeID.ToString())
+                    )
+                ).ToList();
+
+            return new EmployeeDepartment
+            {
+                DepartmentID = departmentIds,
+                EmployeeIDList = employeeIdList
+            };
         }
 
         public async Task<EmployeeInfo?> GetEmployeeIdByUserId(Guid Id)

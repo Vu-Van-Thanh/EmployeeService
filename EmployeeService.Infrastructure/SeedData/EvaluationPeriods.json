@@ -1,0 +1,32 @@
+[
+  {
+    "PeriodID": "4F71BF52-868D-43F5-8A56-26B3B0906833",
+    "Name": "Q1 2023 Performance Review",
+    "StartDate": "2023-01-01T00:00:00",
+    "EndDate": "2023-03-31T23:59:59"
+  },
+  {
+    "PeriodID": "D5BBE570-ED44-4BC0-9A53-92FACE1E8C19",
+    "Name": "Q2 2023 Performance Review",
+    "StartDate": "2023-04-01T00:00:00",
+    "EndDate": "2023-06-30T23:59:59"
+  },
+  {
+    "PeriodID": "F74D6C5C-5FD9-4EF1-AE7E-52E3C50D3D3A",
+    "Name": "Q3 2023 Performance Review",
+    "StartDate": "2023-07-01T00:00:00",
+    "EndDate": "2023-09-30T23:59:59"
+  },
+  {
+    "PeriodID": "A0D94E5C-931E-4F40-9D7D-9924E9A620A9",
+    "Name": "Q4 2023 Performance Review",
+    "StartDate": "2023-10-01T00:00:00",
+    "EndDate": "2023-12-31T23:59:59"
+  },
+  {
+    "PeriodID": "3B1CA0BF-5FC2-4E2A-B447-EBA1BA7AB4F6",
+    "Name": "2023 Annual Review",
+    "StartDate": "2023-01-01T00:00:00",
+    "EndDate": "2023-12-31T23:59:59"
+  }
+] 

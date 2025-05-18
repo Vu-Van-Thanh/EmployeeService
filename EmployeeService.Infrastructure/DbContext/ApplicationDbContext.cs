@@ -16,6 +16,9 @@ namespace EmployeeService.Infrastructure.AppDbContext
         public DbSet<Relative> Relatives { get; set; }
         public DbSet<EmployeeContract> EmployeeContracts { get; set; }
         public DbSet<Education> Educations { get; set; }
+        public DbSet<EmployeeEvaluation> EmployeeEvaluations { get; set; }
+        public DbSet<EvaluationCriterion> EvaluationCriteria { get; set; }
+        public DbSet<EvaluationPeriod> EvaluationPeriods { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -34,8 +37,19 @@ namespace EmployeeService.Infrastructure.AppDbContext
 
             var employeeContracts = LoadSeedData<EmployeeContract>("SeedData/EmployeeContracts.json");
             builder.Entity<EmployeeContract>().HasData(employeeContracts);
+            
             var educations = LoadSeedData<Education>("SeedData/Educations.json");
             builder.Entity<Education>().HasData(educations);
+            
+            // Seed data for evaluation entities
+            var evaluationPeriods = LoadSeedData<EvaluationPeriod>("SeedData/EvaluationPeriods.json");
+            builder.Entity<EvaluationPeriod>().HasData(evaluationPeriods);
+            
+            var evaluationCriteria = LoadSeedData<EvaluationCriterion>("SeedData/EvaluationCriteria.json");
+            builder.Entity<EvaluationCriterion>().HasData(evaluationCriteria);
+            
+            var employeeEvaluations = LoadSeedData<EmployeeEvaluation>("SeedData/EmployeeEvaluations.json");
+            builder.Entity<EmployeeEvaluation>().HasData(employeeEvaluations);
         }
 
         private static List<T> LoadSeedData<T>(string filePath)

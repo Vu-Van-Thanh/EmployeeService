@@ -38,6 +38,15 @@ namespace EmployeeServiceRegistry
             services.AddScoped<IEducationService, EducationService>();
             services.AddScoped<IEmployeeContractRepository, EmployeeContractRepository>();
             services.AddScoped<IEmployeeContractService, EmployeeContractService>();
+
+            // Evaluation services and repositories
+            services.AddScoped<IEmployeeEvaluationRepository, EmployeeEvaluationRepository>();
+            services.AddScoped<IEmployeeEvaluationService, EmployeeEvaluationService>();
+            services.AddScoped<IEvaluationCriterionRepository, EvaluationCriterionRepository>();
+            services.AddScoped<IEvaluationCriterionService, EvaluationCriterionService>();
+            services.AddScoped<IEvaluationPeriodRepository, EvaluationPeriodRepository>();
+            services.AddScoped<IEvaluationPeriodService, EvaluationPeriodService>();
+
             services.AddScoped<IEventProducer, EmployeeProducer>();
             services.AddScoped<IKafkaHandler<KafkaRequest<EmployeeFilterDTO>>, GetEmployeeHandler>();
             services.AddScoped<IKafkaHandler<KafkaRequest<StartImportEmployee>>, EmployeeImportHandler>();

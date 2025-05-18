@@ -1,0 +1,51 @@
+[
+  {
+    "CriterionID": "7FBAD584-5C72-4E12-A35F-19C80BA0C143",
+    "Name": "Technical Skills",
+    "Description": "Assessment of employee's technical knowledge and skills relevant to their position",
+    "Weight": 0.25,
+    "Category": "Skills"
+  },
+  {
+    "CriterionID": "D7A64787-B9A0-4F41-A4FB-CFFE9D0E19FC",
+    "Name": "Communication",
+    "Description": "Ability to communicate effectively with team members and stakeholders",
+    "Weight": 0.15,
+    "Category": "Soft Skills"
+  },
+  {
+    "CriterionID": "E6F1CA8E-1D3D-4C1A-9239-B1CA765B92B3",
+    "Name": "Problem Solving",
+    "Description": "Ability to analyze situations and develop effective solutions",
+    "Weight": 0.20,
+    "Category": "Skills"
+  },
+  {
+    "CriterionID": "2A63D8A0-C090-4B9A-A95C-2390995B2527",
+    "Name": "Quality of Work",
+    "Description": "The quality and accuracy of work produced",
+    "Weight": 0.20,
+    "Category": "Performance"
+  },
+  {
+    "CriterionID": "8FA78C5E-B701-45DD-B721-40C76C32D6A2",
+    "Name": "Teamwork",
+    "Description": "Ability to work cooperatively with others and contribute to team objectives",
+    "Weight": 0.10,
+    "Category": "Soft Skills"
+  },
+  {
+    "CriterionID": "AECFD0A1-E9B3-40E3-B7B7-683D42C7A654",
+    "Name": "Punctuality & Attendance",
+    "Description": "Consistency in arriving on time and maintaining good attendance",
+    "Weight": 0.05,
+    "Category": "Discipline"
+  },
+  {
+    "CriterionID": "BD5D538C-AC5A-401D-A65B-F1D429590025",
+    "Name": "Initiative",
+    "Description": "Willingness to take on responsibilities and challenges",
+    "Weight": 0.05,
+    "Category": "Soft Skills"
+  }
+] 

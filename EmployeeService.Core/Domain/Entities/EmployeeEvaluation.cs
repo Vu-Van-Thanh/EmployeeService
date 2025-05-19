@@ -23,8 +23,7 @@ namespace EmployeeService.Core.Domain.Entities
         public string DetailJson {get;set;}
         [ForeignKey("EmployeeID")]
         public virtual Employee? Employee {get;set;}
-        [ForeignKey("EvaluatorId")]
-        public virtual Employee? Evaluator {get;set;}
+
         [ForeignKey("PeriodId")]
         public virtual EvaluationPeriod? Period {get;set;}
 

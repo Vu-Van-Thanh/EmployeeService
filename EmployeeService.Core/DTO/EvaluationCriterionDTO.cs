@@ -37,4 +37,14 @@ namespace EmployeeService.Core.DTO
                 (string.IsNullOrEmpty(Category) || e.Category == Category);
         }
     }
+
+    public class CriterionStatisticDTO
+    {
+        public Guid CriterionID { get; set; }
+        public string Name { get; set; }
+        public string? Category { get; set; }
+        public double AverageScore { get; set; }
+        public int TotalEvaluations { get; set; }
+        public double? Weight { get; set; }
+    }
 } 

@@ -24,7 +24,7 @@ namespace EmployeeService.Infrastructure.Repositories
         {
             try
             {
-                _context.Set<EmployeeEvaluation>().Add(evaluation);
+                _context.EmployeeEvaluations.Add(evaluation);
                 await _context.SaveChangesAsync();
                 return evaluation.ID;
             }
@@ -37,17 +37,17 @@ namespace EmployeeService.Infrastructure.Repositories
 
         public async Task<bool> DeleteEvaluation(Guid id)
         {
-            var evaluation = await _context.Set<EmployeeEvaluation>().FindAsync(id);
+            var evaluation = await _context.EmployeeEvaluations.FindAsync(id);
             if (evaluation == null)
                 return false;
 
-            _context.Set<EmployeeEvaluation>().Remove(evaluation);
+            _context.EmployeeEvaluations.Remove(evaluation);
             return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<List<EmployeeEvaluation>> GetAll()
         {
-            return await _context.Set<EmployeeEvaluation>()
+            return await _context.EmployeeEvaluations
                 .Include(e => e.Employee)
                 .Include(e => e.Period)
                 .ToListAsync();
@@ -55,7 +55,7 @@ namespace EmployeeService.Infrastructure.Repositories
 
         public async Task<EmployeeEvaluation?> GetEvaluationById(Guid id)
         {
-            return await _context.Set<EmployeeEvaluation>()
+            return await _context.EmployeeEvaluations
                 .Include(e => e.Employee)
                 .Include(e => e.Period)
                 .FirstOrDefaultAsync(e => e.ID == id);
@@ -63,7 +63,7 @@ namespace EmployeeService.Infrastructure.Repositories
 
         public async Task<List<EmployeeEvaluation>> GetEvaluationsByEmployeeId(Guid employeeId)
         {
-            return await _context.Set<EmployeeEvaluation>()
+            return await _context.EmployeeEvaluations
                 .Include(e => e.Employee)
                 .Include(e => e.Period)
                 .Where(e => e.EmployeeID == employeeId)
@@ -72,7 +72,7 @@ namespace EmployeeService.Infrastructure.Repositories
 
         public async Task<List<EmployeeEvaluation>> GetEvaluationsByFilter(Expression<Func<EmployeeEvaluation, bool>> filter)
         {
-            return await _context.Set<EmployeeEvaluation>()
+            return await _context.EmployeeEvaluations
                 .Include(e => e.Employee)
                 .Include(e => e.Period)
                 .Where(filter)
@@ -81,7 +81,7 @@ namespace EmployeeService.Infrastructure.Repositories
 
         public async Task<List<EmployeeEvaluation>> GetEvaluationsByPeriodId(Guid periodId)
         {
-            return await _context.Set<EmployeeEvaluation>()
+            return await _context.EmployeeEvaluations
                 .Include(e => e.Employee)
                 .Include(e => e.Period)
                 .Where(e => e.PeriodId == periodId)
@@ -90,7 +90,7 @@ namespace EmployeeService.Infrastructure.Repositories
 
         public async Task<Guid> UpdateEvaluation(EmployeeEvaluation evaluation)
         {
-            var existing = await _context.Set<EmployeeEvaluation>().FindAsync(evaluation.ID);
+            var existing = await _context.EmployeeEvaluations.FindAsync(evaluation.ID);
             if (existing == null)
             {
                 throw new Exception("Evaluation not found");

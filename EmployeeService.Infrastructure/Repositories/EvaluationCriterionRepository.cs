@@ -24,7 +24,7 @@ namespace EmployeeService.Infrastructure.Repositories
         {
             try
             {
-                _context.Set<EvaluationCriterion>().Add(criterion);
+                _context.EvaluationCriterias.Add(criterion);
                 await _context.SaveChangesAsync();
                 return criterion.CriterionID;
             }
@@ -37,41 +37,41 @@ namespace EmployeeService.Infrastructure.Repositories
 
         public async Task<bool> DeleteCriterion(Guid id)
         {
-            var criterion = await _context.Set<EvaluationCriterion>().FindAsync(id);
+            var criterion = await _context.EvaluationCriterias.FindAsync(id);
             if (criterion == null)
                 return false;
 
-            _context.Set<EvaluationCriterion>().Remove(criterion);
+            _context.EvaluationCriterias.Remove(criterion);
             return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<List<EvaluationCriterion>> GetAll()
         {
-            return await _context.Set<EvaluationCriterion>().ToListAsync();
+            return await _context.EvaluationCriterias.ToListAsync();
         }
 
         public async Task<EvaluationCriterion?> GetCriterionById(Guid id)
         {
-            return await _context.Set<EvaluationCriterion>().FindAsync(id);
+            return await _context.EvaluationCriterias.FindAsync(id);
         }
 
         public async Task<List<EvaluationCriterion>> GetCriterionsByCategory(string category)
         {
-            return await _context.Set<EvaluationCriterion>()
+            return await _context.EvaluationCriterias
                 .Where(c => c.Category == category)
                 .ToListAsync();
         }
 
         public async Task<List<EvaluationCriterion>> GetCriterionsByFilter(Expression<Func<EvaluationCriterion, bool>> filter)
         {
-            return await _context.Set<EvaluationCriterion>()
+            return await _context.EvaluationCriterias
                 .Where(filter)
                 .ToListAsync();
         }
 
         public async Task<Guid> UpdateCriterion(EvaluationCriterion criterion)
         {
-            var existing = await _context.Set<EvaluationCriterion>().FindAsync(criterion.CriterionID);
+            var existing = await _context.EvaluationCriterias.FindAsync(criterion.CriterionID);
             if (existing == null)
             {
                 throw new Exception("Criterion not found");

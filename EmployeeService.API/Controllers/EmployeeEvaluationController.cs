@@ -143,5 +143,22 @@ namespace EmployeeService.API.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Get statistics for all evaluation criteria
+        /// </summary>
+        [HttpGet("statistics")]
+        public async Task<ActionResult<IEnumerable<CriterionStatisticDTO>>> GetCriterionStatistics()
+        {
+            try
+            {
+                var statistics = await _evaluationService.GetCriterionStatistics();
+                return Ok(statistics);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
     }
 } 

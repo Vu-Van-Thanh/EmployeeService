@@ -24,7 +24,7 @@ namespace EmployeeService.Infrastructure.Repositories
         {
             try
             {
-                _context.Set<EvaluationPeriod>().Add(period);
+                _context.EvaluationPeriods.Add(period);
                 await _context.SaveChangesAsync();
                 return period.PeriodID;
             }
@@ -37,42 +37,42 @@ namespace EmployeeService.Infrastructure.Repositories
 
         public async Task<bool> DeletePeriod(Guid id)
         {
-            var period = await _context.Set<EvaluationPeriod>().FindAsync(id);
+            var period = await _context.EvaluationPeriods.FindAsync(id);
             if (period == null)
                 return false;
 
-            _context.Set<EvaluationPeriod>().Remove(period);
+            _context.EvaluationPeriods.Remove(period);
             return await _context.SaveChangesAsync() > 0;
         }
 
         public async Task<List<EvaluationPeriod>> GetActivePeriods()
         {
             DateTime now = DateTime.Now;
-            return await _context.Set<EvaluationPeriod>()
+            return await _context.EvaluationPeriods
                 .Where(p => p.StartDate <= now && p.EndDate >= now)
                 .ToListAsync();
         }
 
         public async Task<List<EvaluationPeriod>> GetAll()
         {
-            return await _context.Set<EvaluationPeriod>().ToListAsync();
+            return await _context.EvaluationPeriods.ToListAsync();
         }
 
         public async Task<EvaluationPeriod?> GetPeriodById(Guid id)
         {
-            return await _context.Set<EvaluationPeriod>().FindAsync(id);
+            return await _context.EvaluationPeriods.FindAsync(id);
         }
 
         public async Task<List<EvaluationPeriod>> GetPeriodsByFilter(Expression<Func<EvaluationPeriod, bool>> filter)
         {
-            return await _context.Set<EvaluationPeriod>()
+            return await _context.EvaluationPeriods
                 .Where(filter)
                 .ToListAsync();
         }
 
         public async Task<Guid> UpdatePeriod(EvaluationPeriod period)
         {
-            var existing = await _context.Set<EvaluationPeriod>().FindAsync(period.PeriodID);
+            var existing = await _context.EvaluationPeriods.FindAsync(period.PeriodID);
             if (existing == null)
             {
                 throw new Exception("Period not found");

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace EmployeeService.Core.Services
@@ -21,15 +22,21 @@ namespace EmployeeService.Core.Services
         Task<Guid> AddEvaluation(EmployeeEvaluationAddDTO evaluation);
         Task<Guid> UpdateEvaluation(EmployeeEvaluationDTO evaluation);
         Task<bool> DeleteEvaluation(Guid id);
+        Task<string> GetDetailedScoresWithNames(Guid evaluationId);
+        Task<List<CriterionStatisticDTO>> GetCriterionStatistics();
     }
 
     public class EmployeeEvaluationService : IEmployeeEvaluationService
     {
         private readonly IEmployeeEvaluationRepository _evaluationRepository;
+        private readonly IEvaluationCriterionRepository _criterionRepository;
 
-        public EmployeeEvaluationService(IEmployeeEvaluationRepository evaluationRepository)
+        public EmployeeEvaluationService(
+            IEmployeeEvaluationRepository evaluationRepository,
+            IEvaluationCriterionRepository criterionRepository)
         {
             _evaluationRepository = evaluationRepository;
+            _criterionRepository = criterionRepository;
         }
 
         public async Task<Guid> AddEvaluation(EmployeeEvaluationAddDTO evaluation)
@@ -54,35 +61,40 @@ namespace EmployeeService.Core.Services
 
         public async Task<List<EmployeeEvaluationDTO>> GetAllEvaluations()
         {
-            List<EmployeeEvaluation> evaluations = await _evaluationRepository.GetAll();
-            return evaluations.Select(e => e.ToDTO()).ToList();
+            var evaluations = await _evaluationRepository.GetAll();
+            var criteria = await _criterionRepository.GetAll();
+            return evaluations.Select(e => e.ToDTO(criteria)).ToList();
         }
 
         public async Task<EmployeeEvaluationDTO?> GetEvaluationById(Guid id)
         {
-            EmployeeEvaluation? evaluation = await _evaluationRepository.GetEvaluationById(id);
+            var evaluation = await _evaluationRepository.GetEvaluationById(id);
             if (evaluation == null)
                 return null;
             
-            return evaluation.ToDTO();
+            var criteria = await _criterionRepository.GetAll();
+            return evaluation.ToDTO(criteria);
         }
 
         public async Task<List<EmployeeEvaluationDTO>> GetEvaluationsByEmployeeId(Guid employeeId)
         {
-            List<EmployeeEvaluation> evaluations = await _evaluationRepository.GetEvaluationsByEmployeeId(employeeId);
-            return evaluations.Select(e => e.ToDTO()).ToList();
+            var evaluations = await _evaluationRepository.GetEvaluationsByEmployeeId(employeeId);
+            var criteria = await _criterionRepository.GetAll();
+            return evaluations.Select(e => e.ToDTO(criteria)).ToList();
         }
 
         public async Task<List<EmployeeEvaluationDTO>> GetEvaluationsByFilter(EmployeeEvaluationFilterDTO filter)
         {
-            List<EmployeeEvaluation> evaluations = await _evaluationRepository.GetEvaluationsByFilter(filter.ToExpression());
-            return evaluations.Select(e => e.ToDTO()).ToList();
+            var evaluations = await _evaluationRepository.GetEvaluationsByFilter(filter.ToExpression());
+            var criteria = await _criterionRepository.GetAll();
+            return evaluations.Select(e => e.ToDTO(criteria)).ToList();
         }
 
         public async Task<List<EmployeeEvaluationDTO>> GetEvaluationsByPeriodId(Guid periodId)
         {
-            List<EmployeeEvaluation> evaluations = await _evaluationRepository.GetEvaluationsByPeriodId(periodId);
-            return evaluations.Select(e => e.ToDTO()).ToList();
+            var evaluations = await _evaluationRepository.GetEvaluationsByPeriodId(periodId);
+            var criteria = await _criterionRepository.GetAll();
+            return evaluations.Select(e => e.ToDTO(criteria)).ToList();
         }
 
         public async Task<Guid> UpdateEvaluation(EmployeeEvaluationDTO evaluation)
@@ -108,6 +120,77 @@ namespace EmployeeService.Core.Services
                 Console.WriteLine($"Error updating evaluation: {ex.Message}");
                 return Guid.Empty;
             }
+        }
+
+        public async Task<string> GetDetailedScoresWithNames(Guid evaluationId)
+        {
+            var evaluation = await _evaluationRepository.GetEvaluationById(evaluationId);
+            if (evaluation == null || string.IsNullOrEmpty(evaluation.DetailJson))
+                return "{}";
+
+            var criteria = await _criterionRepository.GetAll();
+            var scoresDict = JsonSerializer.Deserialize<Dictionary<string, double>>(evaluation.DetailJson);
+            if (scoresDict == null)
+                return "{}";
+
+            var result = new Dictionary<string, double>();
+            foreach (var score in scoresDict)
+            {
+                var criterion = criteria.FirstOrDefault(c => c.CriterionID.ToString() == score.Key);
+                if (criterion != null)
+                {
+                    result[criterion.Name] = score.Value;
+                }
+            }
+
+            return JsonSerializer.Serialize(result);
+        }
+
+        public async Task<List<CriterionStatisticDTO>> GetCriterionStatistics()
+        {
+            // Lấy tất cả tiêu chí trước
+            var criteria = await _criterionRepository.GetAll();
+            var evaluations = await _evaluationRepository.GetAll();
+            var result = new List<CriterionStatisticDTO>();
+
+            // Với mỗi tiêu chí
+            foreach (var criterion in criteria)
+            {
+                var scores = new List<double>();
+                
+                // Tìm trong tất cả đánh giá
+                foreach (var evaluation in evaluations)
+                {
+                    if (!string.IsNullOrEmpty(evaluation.DetailJson))
+                    {
+                        try
+                        {
+                            var scoresDict = JsonSerializer.Deserialize<Dictionary<string, double>>(evaluation.DetailJson);
+                            if (scoresDict != null && scoresDict.TryGetValue(criterion.CriterionID.ToString(), out double score))
+                            {
+                                scores.Add(score);
+                            }
+                        }
+                        catch
+                        {
+                            continue;
+                        }
+                    }
+                }
+
+                // Tính trung bình và thêm vào kết quả
+                result.Add(new CriterionStatisticDTO
+                {
+                    CriterionID = criterion.CriterionID,
+                    Name = criterion.Name,
+                    Category = criterion.Category,
+                    Weight = criterion.Weight,
+                    AverageScore = scores.Any() ? scores.Average() : 0,
+                    TotalEvaluations = scores.Count
+                });
+            }
+
+            return result;
         }
     }
 } 

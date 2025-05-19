@@ -17,7 +17,7 @@ namespace EmployeeService.Infrastructure.AppDbContext
         public DbSet<EmployeeContract> EmployeeContracts { get; set; }
         public DbSet<Education> Educations { get; set; }
         public DbSet<EmployeeEvaluation> EmployeeEvaluations { get; set; }
-        public DbSet<EvaluationCriterion> EvaluationCriteria { get; set; }
+        public DbSet<EvaluationCriterion> EvaluationCriterias { get; set; }
         public DbSet<EvaluationPeriod> EvaluationPeriods { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)

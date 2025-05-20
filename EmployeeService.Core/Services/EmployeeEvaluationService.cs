@@ -166,7 +166,7 @@ namespace EmployeeService.Core.Services
                         try
                         {
                             var scoresDict = JsonSerializer.Deserialize<Dictionary<string, double>>(evaluation.DetailJson);
-                            if (scoresDict != null && scoresDict.TryGetValue(criterion.CriterionID.ToString(), out double score))
+                            if (scoresDict != null && scoresDict.TryGetValue(criterion.CriterionID.ToString().ToUpper(), out double score))
                             {
                                 scores.Add(score);
                             }

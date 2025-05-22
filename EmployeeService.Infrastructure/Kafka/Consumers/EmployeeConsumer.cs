@@ -71,7 +71,7 @@ namespace EmployeeService.Infrastructure.Kafka.Consumers
 
             return new ConsumerBuilder<string, string>(consumerConfig).Build();
         }
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        /*protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
@@ -98,8 +98,58 @@ namespace EmployeeService.Infrastructure.Kafka.Consumers
                         // thêm các topic khác nếu cần
                 }
             }
-        }
+        }*/
+        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            // Chạy trong một Task riêng biệt để không chặn luồng khởi động
+            Task.Run(async () =>
+            {
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    try
+                    {
+                        var result = _consumer.Consume(stoppingToken);
+                        var topic = result.Topic;
+                        var message = result.Message.Value;
 
+                        using var scope = _serviceProvider.CreateScope();
+
+                        switch (topic)
+                        {
+                            case "employee-import":
+                                Console.WriteLine("Receive : {0}", message);
+                                var importHandler = scope.ServiceProvider.GetRequiredService<IKafkaHandler<KafkaRequest<StartImportEmployee>>>();
+                                var importData = JsonSerializer.Deserialize<KafkaRequest<StartImportEmployee>>(message);
+                                await importHandler.HandleAsync(importData);
+                                break;
+
+                            case "get-all-employee":
+                                Console.WriteLine("Receive : {0}", message);
+                                var filterHandler = scope.ServiceProvider.GetRequiredService<IKafkaHandler<KafkaRequest<EmployeeFilterDTO>>>();
+                                var filterData = JsonSerializer.Deserialize<KafkaRequest<EmployeeFilterDTO>>(message);
+                                await filterHandler.HandleAsync(filterData);
+                                break;
+
+                                // Thêm các topic khác nếu cần
+                        }
+                    }
+                    catch (ConsumeException ex)
+                    {
+                        Console.WriteLine($"Kafka consume error: {ex.Error.Reason}");
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // ignore khi stopping
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Unhandled error in EmployeeConsumer: {ex.Message}");
+                    }
+                }
+            }, stoppingToken);
+
+            return Task.CompletedTask;
+        }
         public override Task StopAsync(CancellationToken cancellationToken)
         {
             _consumer.Close();    // Dừng Kafka consumer một cách "gracefully"

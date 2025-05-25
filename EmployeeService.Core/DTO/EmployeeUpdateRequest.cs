@@ -9,6 +9,7 @@ namespace EmployeeService.Core.DTO
 {
     public class EmployeeUpdateRequest
     {
+        public Guid EmployeeID { get; set; }
         public Guid? ManagerID { get; set; } 
         public string? Position { get; set; }   
         public string? FirstName { get; set; }

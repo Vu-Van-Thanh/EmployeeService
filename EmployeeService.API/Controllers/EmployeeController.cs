@@ -138,14 +138,14 @@ namespace EmployeeService.API.Controllers
         /// Cập nhật thông tin nhân viên
         /// </summary>
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateEmployee(Guid userId, [FromBody] EmployeeUpdateRequest employeeDto)
+        public async Task<IActionResult> UpdateEmployee( [FromBody] EmployeeUpdateRequest employeeDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            Guid employeeId = Guid.Parse((await _employeeService.GetEmployeeIdByUserId(userId)).EmployeeID);
+            
 
-            EmployeeUpdateResponse result = await _employeeService.UpdateEmployee(employeeDto, employeeId);
+            EmployeeUpdateResponse result = await _employeeService.UpdateEmployee(employeeDto);
            
 
             return Ok(result);

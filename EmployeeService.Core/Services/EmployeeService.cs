@@ -13,7 +13,7 @@ namespace EmployeeService.Core.Services
     public interface IEmployeeService
     {
         Task<EmployeeInfo> GetEmployeeById(Guid Id);
-        Task<EmployeeUpdateResponse> UpdateEmployee(EmployeeUpdateRequest employee, Guid EmployeeId);
+        Task<EmployeeUpdateResponse> UpdateEmployee(EmployeeUpdateRequest employee);
         Task<List<EmployeeInfo>> GetAllEmployees();
         Task<List<EmployeeInfo>> GetEmployeesByFeature(string feature, string value = "All");
         Task<Guid> AddEmployee(EmployeeAddRequest employee);
@@ -623,9 +623,9 @@ namespace EmployeeService.Core.Services
 
         }
 
-        public async Task<EmployeeUpdateResponse> UpdateEmployee(EmployeeUpdateRequest employee, Guid EmployeeId)
+        public async Task<EmployeeUpdateResponse> UpdateEmployee(EmployeeUpdateRequest employee)
         {
-            Employee exist = await _employeesRepository.GetEmployeeById(EmployeeId);
+            Employee exist = await _employeesRepository.GetEmployeeById(employee.EmployeeID);
             if (exist == null) throw new Exception("employee not found.");
 
             // Cập nhật Gender
@@ -665,7 +665,7 @@ namespace EmployeeService.Core.Services
 
             // Cập nhật vào employee database
             Guid result = await _employeesRepository.UpdateEmployee(exist);
-            if (result != EmployeeId)
+            if (result != employee.EmployeeID)
             {
 
                 throw new Exception("Update employee failed.");
@@ -676,12 +676,12 @@ namespace EmployeeService.Core.Services
             {
                 foreach (IdentityCard item in employee.identityCardImage)
                 {
-                    Guid existMedia = (await _employeeMediaRepository.GetEmployeeMediaIdByType(EmployeeId, "Avatar")).EmployeeMediaID;
+                    Guid existMedia = (await _employeeMediaRepository.GetEmployeeMediaIdByType(employee.EmployeeID, "Avatar")).EmployeeMediaID;
                     if (existMedia != Guid.Empty)
                     {
                         string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "IdentityCard");
                         string extension = Path.GetExtension(item.identityImage.FileName);
-                        string fileName = $"{EmployeeId}_{item.type}{extension}";
+                        string fileName = $"{employee.EmployeeID}_{item.type}{extension}";
                         string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "IdentityCard");
                         string fullPath = Path.Combine(folderPath, fileName);
                         string relativePath = Path.Combine("Uploads", "IdentityCard", fileName);
@@ -706,7 +706,7 @@ namespace EmployeeService.Core.Services
                     {
                         string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "IdentityCard");
                         string extension = Path.GetExtension(item.identityImage.FileName);
-                        string fileName = $"{EmployeeId}_{item.type}{extension}";
+                        string fileName = $"{employee.EmployeeID}_{item.type}{extension}";
                         string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "IdentityCard");
                         string fullPath = Path.Combine(folderPath, fileName);
                         string relativePath = Path.Combine("Uploads", "IdentityCard", fileName);
@@ -733,12 +733,12 @@ namespace EmployeeService.Core.Services
                 foreach (InsuranceCard item in employee.insuranceCardImage)
                 {
 
-                    Guid existMedia = (await _employeeMediaRepository.GetEmployeeMediaIdByType(EmployeeId, "Avatar")).EmployeeMediaID;
+                    Guid existMedia = (await _employeeMediaRepository.GetEmployeeMediaIdByType(employee.EmployeeID, "Avatar")).EmployeeMediaID;
                     if (existMedia != Guid.Empty)
                     {
                         string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "InsuranceCard");
                         string extension = Path.GetExtension(item.insuranceImage.FileName);
-                        string fileName = $"{EmployeeId}_{item.type}{extension}";
+                        string fileName = $"{employee.EmployeeID}_{item.type}{extension}";
                         string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "InsuranceCard");
                         string fullPath = Path.Combine(folderPath, fileName);
                         string relativePath = Path.Combine("Uploads", "InsuranceCard", fileName);
@@ -763,7 +763,7 @@ namespace EmployeeService.Core.Services
                     {
                         string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "InsuranceCard");
                         string extension = Path.GetExtension(item.insuranceImage.FileName);
-                        string fileName = $"{EmployeeId}_{item.type}{extension}";
+                        string fileName = $"{employee.EmployeeID}_{item.type}{extension}";
                         string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "InsuranceCard");
                         string fullPath = Path.Combine(folderPath, fileName);
                         string relativePath = Path.Combine("Uploads", "InsuranceCard", fileName);

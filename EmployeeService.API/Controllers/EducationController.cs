@@ -42,7 +42,7 @@ namespace EmployeeService.API.Controllers
         }*/
 
         [HttpGet("filter-education")]
-        public async Task<ActionResult<IEnumerable<EducationDTO>>> GetEducationByFilter(EducationFilterDTO educationFilter)
+        public async Task<ActionResult<IEnumerable<EducationDTO>>> GetEducationByFilter([FromQuery] EducationFilterDTO educationFilter)
         {
            
             var employees = await _educationService.GetEducationsByFilter(educationFilter);

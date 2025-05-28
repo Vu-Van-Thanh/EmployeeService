@@ -15,6 +15,7 @@ namespace EmployeeService.Core.Services
         Task<RelativeUpsertResponse> relativeUpsertResponse(RelativeUpsertRequest relativeUpsertRequest);
         Task<List<RelativeInfoResponse>> GetAllRelative();
         Task<List<RelativeInfoResponse>> GetRelativeByEmployee(Guid employeeId);
+        Task<Guid> DeleteRelative(string CCCD);
     }
     public class RelativeService : IRelativeService
     {
@@ -38,6 +39,17 @@ namespace EmployeeService.Core.Services
             return list?.Select(x => x.ToRelativeInfoResponse()).ToList();
         }
 
+        public async Task<Guid> DeleteRelative(string CCCD)
+        {
+            Relative? relative = (await _relative.GetRelativeByFilter(r => r.IndentityCard == CCCD)).FirstOrDefault();
+            if (relative == null)
+            {
+                return Guid.Empty;
+                
+                
+            }
+            return await _relative.DeleteRelative(relative);
+        }
         public async Task<RelativeUpsertResponse> relativeUpsertResponse(RelativeUpsertRequest relativeUpsertRequest)
         {
             List<Relative>? listRelative;

@@ -20,6 +20,14 @@ namespace EmployeeService.Infrastructure.Repositories
             this.dbContext = dbContext;
         }
 
+        public async Task<Guid> DeleteRelative(Relative relative)
+        {
+            await dbContext.Relatives
+                .Where(r => r.RelativeID == relative.RelativeID)
+                .ExecuteDeleteAsync();
+            return relative.RelativeID;
+        }
+
         public async Task<List<Relative>?> GetAllRelative()
         {
             return await dbContext.Relatives.ToListAsync();

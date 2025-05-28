@@ -14,5 +14,6 @@ namespace EmployeeService.Core.RepositoryContracts
         Task<List<Relative>> GetAllRelative();
         Task<List<Relative>?> GetRelativeById(Guid relativeId);
         Task<List<Relative>?> GetRelativeByFilter(Expression<Func<Relative,bool>> expression);
+        Task<Guid> DeleteRelative(Relative relative);
     }
 }

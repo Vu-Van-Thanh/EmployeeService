@@ -39,6 +39,16 @@ namespace EmployeeService.API.Controllers
             return Ok((await _relativeService.relativeUpsertResponse(relative)));
         }
 
+        [HttpDelete("{CCCD}")]
+        public async Task<IActionResult> DeleteRelative(string CCCD)
+        {
+            var relative = await _relativeService.DeleteRelative(CCCD);
+            if (relative == Guid.Empty)
+            {
+                return NotFound("Relative not found");
+            }
+            return Ok("Relative deleted successfully");
+        }
 
     }
 }

@@ -32,10 +32,10 @@ namespace EmployeeService.API.Controllers
         }
 
 
-        [HttpPost("{id}")]
-        public async Task<IActionResult> UpdateRelative(Guid userId, [FromBody] RelativeUpsertRequest relative)
+        [HttpPost]
+        public async Task<IActionResult> UpdateRelative([FromBody] RelativeUpsertRequest relative)
         {
-            relative.EmployeeID = Guid.Parse((await _employeeService.GetEmployeeIdByUserId(userId)).EmployeeID);
+            
             return Ok((await _relativeService.relativeUpsertResponse(relative)));
         }
 

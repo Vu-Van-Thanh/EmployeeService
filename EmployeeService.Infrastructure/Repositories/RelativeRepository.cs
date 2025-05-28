@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using EmployeeService.Core.Domain.Entities;
@@ -24,6 +25,13 @@ namespace EmployeeService.Infrastructure.Repositories
             return await dbContext.Relatives.ToListAsync();
         }
 
+        public async Task<List<Relative>?> GetRelativeByFilter(Expression<Func<Relative, bool>> expression)
+        {
+            return await dbContext.Relatives
+                .Where(expression)
+                .ToListAsync();
+        }
+
         public async Task<List<Relative>?> GetRelativeById(Guid employeeId)
         {
             return await dbContext.Relatives.Where(r => r.EmployeeID == employeeId).ToListAsync();
@@ -32,7 +40,6 @@ namespace EmployeeService.Infrastructure.Repositories
         public async Task<Relative> UpsertRelative(Relative relative)
         {
             var existingRelative = await dbContext.Relatives
-                .AsNoTracking() 
                 .FirstOrDefaultAsync(r => r.RelativeID == relative.RelativeID);
 
             if (existingRelative == null)

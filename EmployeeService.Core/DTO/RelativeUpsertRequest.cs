@@ -15,6 +15,7 @@ namespace EmployeeService.Core.DTO
         public string? RelativeType { get; set; }
         public string? LastName { get; set; }
         public DateTime? DateOfBirth { get; set; }
+        public string? PhoneNumber { get; set }
         public string? Address { get; set; }
         public string? Nationality { get; set; } = "Việt Nam";
         public string? Ethnic { get; set; }
@@ -25,6 +26,7 @@ namespace EmployeeService.Core.DTO
         public string? Province { get; set; }
         public string? District { get; set; }
         public string? Commune { get; set; }
+        public string? OldID {get;set;}
         
     }
 }

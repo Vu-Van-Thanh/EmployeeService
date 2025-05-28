@@ -40,9 +40,25 @@ namespace EmployeeService.Core.Services
 
         public async Task<RelativeUpsertResponse> relativeUpsertResponse(RelativeUpsertRequest relativeUpsertRequest)
         {
+            List<Relative>? listRelative;
+            if(!String.IsNullOrEmpty(relativeUpsertRequest.OldID))
+            {
+                listRelative = await _relative.GetRelativeByFilter(r => r.IndentityCard == relativeUpsertRequest.OldID);
+            }
+            else
+            {
+                listRelative = await _relative.GetRelativeByFilter(r => r.IndentityCard.ToString() == relativeUpsertRequest.IndentityCard);
+            }    
+            
+            Guid existId = Guid.Empty;
+            if (listRelative.Count > 0)
+            {
+                existId = listRelative[0].RelativeID;    
+            }    
+            
             Relative relative = await _relative.UpsertRelative(new Relative
             {
-                RelativeID = relativeUpsertRequest.RelativeID ?? Guid.NewGuid(),
+                RelativeID = existId != Guid.Empty ? existId : Guid.NewGuid(),
                 EmployeeID = relativeUpsertRequest.EmployeeID,
                 FirstName = relativeUpsertRequest.FirstName,
                 RelativeType = relativeUpsertRequest.RelativeType,
@@ -57,9 +73,10 @@ namespace EmployeeService.Core.Services
                 Country = relativeUpsertRequest.Country,
                 Province = relativeUpsertRequest.Province,
                 District = relativeUpsertRequest.District,
-                Commune = relativeUpsertRequest.Commune
+                Commune = relativeUpsertRequest.Commune,
+                PhoneNumber = relativeUpsertRequest.PhoneNumber
             });
-
+            await _relative.UpsertRelative(relative);
             return relative.ToRelativeUpsertResponse();
         }
     }

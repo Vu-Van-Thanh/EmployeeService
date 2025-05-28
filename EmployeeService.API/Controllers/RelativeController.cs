@@ -45,9 +45,9 @@ namespace EmployeeService.API.Controllers
             var relative = await _relativeService.DeleteRelative(CCCD);
             if (relative == Guid.Empty)
             {
-                return NotFound("Relative not found");
+                return NotFound(new { message = "Relative not found" });
             }
-            return Ok("Relative deleted successfully");
+            return Ok(new { message = "Relative deleted successfully" });
         }
 
     }

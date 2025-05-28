@@ -1,7 +1,9 @@
-﻿using EmployeeService.Core.Domain.Entities;
+﻿using AutoMapper.Configuration.Annotations;
+using EmployeeService.Core.Domain.Entities;
 using EmployeeService.Core.DTO;
 using EmployeeService.Core.RepositoryContracts;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -70,9 +72,14 @@ namespace EmployeeService.Core.Services
 
         public async  Task<bool> UploadContractFileAsync(EmployeeContractAddRequest request)
         {
+            EmployeeContract? exist = null;
+            if (!String.IsNullOrEmpty(request.OldContractNumber))
+            {
+                exist  = await _contractRepository.GetContractByFilter(c => c.ContractNumber == request.OldContractNumber && c.EmployeeId == request.EmployeeId);
+            }
             if (request.contractFile == null || request.contractFile.Length == 0)
                 return false ;
-
+            EmployeeContract employeeContract;
             try
             {
                 // Đường dẫn thư mục lưu file
@@ -93,21 +100,42 @@ namespace EmployeeService.Core.Services
                 {
                     await request.contractFile.CopyToAsync(stream);
                 }
-
-                EmployeeContract employeeContract = new EmployeeContract
+                if(exist == null)
                 {
-                    ContractId = contractId,
-                    EmployeeId = request.EmployeeId,
-                    ContractType = request.ContractType,
-                    ContractNumber = request.ContractNumber ?? "",
-                    StartDate = request.StartDate,
-                    EndDate = request.EndDate,
-                    ContractUrl = $"/Uploads/EmployeeContracts/{fileName}",
-                    Position = request.Position,
-                    SalaryBase =  request.SalaryBase,
-                    SalaryIndex = request.SalaryIndex,
-                    Status = request.Status
-                };
+                    employeeContract = new EmployeeContract
+                    {
+                        ContractId = exist.ContractId,
+                        EmployeeId = request.EmployeeId,
+                        ContractType = request.ContractType,
+                        ContractNumber = request.ContractNumber ?? "",
+                        StartDate = request.StartDate,
+                        EndDate = request.EndDate,
+                        ContractUrl = $"/Uploads/EmployeeContracts/{fileName}",
+                        Position = request.Position,
+                        SalaryBase = request.SalaryBase,
+                        SalaryIndex = request.SalaryIndex,
+                        Status = request.Status
+                    };
+                }
+                else
+                {
+                    employeeContract = new EmployeeContract
+                    {
+                        ContractId = contractId,
+                        EmployeeId = request.EmployeeId,
+                        ContractType = request.ContractType,
+                        ContractNumber = request.ContractNumber ?? "",
+                        StartDate = request.StartDate,
+                        EndDate = request.EndDate,
+                        ContractUrl = $"/Uploads/EmployeeContracts/{fileName}",
+                        Position = request.Position,
+                        SalaryBase = request.SalaryBase,
+                        SalaryIndex = request.SalaryIndex,
+                        Status = request.Status
+                    };
+
+                }
+                
 
                 await _contractRepository.UpsertContractAsync(employeeContract);
 

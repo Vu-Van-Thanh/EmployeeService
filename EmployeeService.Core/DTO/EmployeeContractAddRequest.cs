@@ -18,7 +18,7 @@ namespace EmployeeService.Core.DTO
         public decimal SalaryIndex { get; set; }
 
         public decimal SalaryBase { get; set; }
-
+        public string ? OldContractNumber { get; set; }
         public string Position { get;set; }
         public IFormFile contractFile { get;set; }
         public string Status { get; set; }

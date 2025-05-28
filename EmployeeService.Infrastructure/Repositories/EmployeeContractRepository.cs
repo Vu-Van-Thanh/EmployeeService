@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -69,6 +70,14 @@ namespace EmployeeService.Infrastructure.Repositories
                 _dbContext.EmployeeContracts.Remove(contract);
                 await _dbContext.SaveChangesAsync();
             }
+        }
+
+        public async Task<EmployeeContract?> GetContractByFilter(Expression<Func<EmployeeContract, bool>> expression)
+        {
+            return await _dbContext.EmployeeContracts
+                .AsNoTracking()
+                .Where(expression)
+                .FirstOrDefaultAsync();
         }
     }
 }

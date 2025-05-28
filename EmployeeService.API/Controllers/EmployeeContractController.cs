@@ -44,7 +44,7 @@ namespace EmployeeService.API.Controllers
         public async Task<IActionResult> AddContract([FromForm] EmployeeContractAddRequest contract)
         {
             await _contractService.UploadContractFileAsync(contract);
-            return Ok("Thêm hợp đồng thành công");
+            return Ok(new { message = "Thêm hợp đồng thành công" });
         }
 
         [HttpPut("{id}")]

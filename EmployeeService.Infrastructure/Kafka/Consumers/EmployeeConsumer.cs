@@ -101,7 +101,7 @@ namespace EmployeeService.Infrastructure.Kafka.Consumers
         }*/
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            // Chạy trong một Task riêng biệt để không chặn luồng khởi động
+            
             Task.Run(async () =>
             {
                 while (!stoppingToken.IsCancellationRequested)

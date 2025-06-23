@@ -104,7 +104,7 @@ namespace EmployeeService.Core.Services
                 {
                     employeeContract = new EmployeeContract
                     {
-                        ContractId = exist.ContractId,
+                        ContractId = contractId,
                         EmployeeId = request.EmployeeId,
                         ContractType = request.ContractType,
                         ContractNumber = request.ContractNumber ?? "",
@@ -116,12 +116,13 @@ namespace EmployeeService.Core.Services
                         SalaryIndex = request.SalaryIndex,
                         Status = request.Status
                     };
+                    
                 }
                 else
                 {
                     employeeContract = new EmployeeContract
                     {
-                        ContractId = contractId,
+                        ContractId = exist.ContractId,
                         EmployeeId = request.EmployeeId,
                         ContractType = request.ContractType,
                         ContractNumber = request.ContractNumber ?? "",

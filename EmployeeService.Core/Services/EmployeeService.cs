@@ -679,12 +679,12 @@ namespace EmployeeService.Core.Services
                     Guid existMedia = (await _employeeMediaRepository.GetEmployeeMediaIdByType(employee.EmployeeID, "Avatar")).EmployeeMediaID;
                     if (existMedia != Guid.Empty)
                     {
-                        string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "IdentityCard");
+                        string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EmployeeMedia", "IdentityCard");
                         string extension = Path.GetExtension(item.identityImage.FileName);
                         string fileName = $"{employee.EmployeeID}_{item.type}{extension}";
-                        string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "IdentityCard");
+                        string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EmployeeMedia", "IdentityCard");
                         string fullPath = Path.Combine(folderPath, fileName);
-                        string relativePath = Path.Combine("Uploads", "IdentityCard", fileName);
+                        string relativePath = Path.Combine("EmployeeMedia", "IdentityCard", fileName);
                         if (File.Exists(path))
                         {
                             File.Delete(path);
@@ -704,12 +704,12 @@ namespace EmployeeService.Core.Services
                     }
                     else
                     {
-                        string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "IdentityCard");
+                        string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EmployeeMedia", "IdentityCard");
                         string extension = Path.GetExtension(item.identityImage.FileName);
                         string fileName = $"{employee.EmployeeID}_{item.type}{extension}";
-                        string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "IdentityCard");
-                        string fullPath = Path.Combine(folderPath, fileName);
-                        string relativePath = Path.Combine("Uploads", "IdentityCard", fileName);
+                        string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EmployeeMedia", "IdentityCard");
+                        string fullPath = Path.Combine(folderPath, fileName);   
+                        string relativePath = Path.Combine("EmployeeMedia", "IdentityCard", fileName);
                         using (var stream = new FileStream(fullPath, FileMode.Create))
                         {
                             await item.identityImage.CopyToAsync(stream);
@@ -736,12 +736,12 @@ namespace EmployeeService.Core.Services
                     Guid existMedia = (await _employeeMediaRepository.GetEmployeeMediaIdByType(employee.EmployeeID, "Avatar")).EmployeeMediaID;
                     if (existMedia != Guid.Empty)
                     {
-                        string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "InsuranceCard");
+                        string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EmployeeMedia", "InsuranceCard");
                         string extension = Path.GetExtension(item.insuranceImage.FileName);
                         string fileName = $"{employee.EmployeeID}_{item.type}{extension}";
-                        string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "InsuranceCard");
+                        string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EmployeeMedia", "InsuranceCard");
                         string fullPath = Path.Combine(folderPath, fileName);
-                        string relativePath = Path.Combine("Uploads", "InsuranceCard", fileName);
+                        string relativePath = Path.Combine("EmployeeMedia", "InsuranceCard", fileName);
                         if (File.Exists(path))
                         {
                             File.Delete(path);
@@ -761,12 +761,12 @@ namespace EmployeeService.Core.Services
                     }
                     else
                     {
-                        string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "InsuranceCard");
+                        string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EmployeeMedia", "InsuranceCard");
                         string extension = Path.GetExtension(item.insuranceImage.FileName);
                         string fileName = $"{employee.EmployeeID}_{item.type}{extension}";
-                        string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Uploads", "InsuranceCard");
+                        string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "EmployeeMedia", "InsuranceCard");
                         string fullPath = Path.Combine(folderPath, fileName);
-                        string relativePath = Path.Combine("Uploads", "InsuranceCard", fileName);
+                        string relativePath = Path.Combine("EmployeeMedia", "InsuranceCard", fileName);
                         using (var stream = new FileStream(fullPath, FileMode.Create))
                         {
                             await item.insuranceImage.CopyToAsync(stream);

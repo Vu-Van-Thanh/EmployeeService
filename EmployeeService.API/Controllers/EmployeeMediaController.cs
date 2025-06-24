@@ -11,9 +11,9 @@ namespace EmployeeService.API.Controllers
     public class EmployeeMediaController : ControllerBase
     {
         private readonly IEmployeeMediaService _service;
-        private readonly EmployeeServices _employeeService;
+        private readonly IEmployeeService _employeeService;
 
-        public EmployeeMediaController(IEmployeeMediaService service, EmployeeServices employeeService)
+        public EmployeeMediaController(IEmployeeMediaService service, IEmployeeService employeeService)
         {
             _service = service;
             _employeeService = employeeService; 
@@ -65,6 +65,14 @@ namespace EmployeeService.API.Controllers
             return Ok("Updated");
         }
 
+        [HttpPost("UpdateMedia")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UpdateMedia( [FromForm] EmployeeMediaUpdateRequest employeeMedia)
+        {
+            
+            await _service.UpdateAsync(employeeMedia);
+            return Ok("Updated");
+        }
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

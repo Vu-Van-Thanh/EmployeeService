@@ -73,34 +73,44 @@ namespace EmployeeService.Core.Services
 
         public async Task UpdateAsync(EmployeeMediaUpdateRequest employeeMedia)
         {
-            List<string> mediaUrls = new List<string>();
-            List<Guid> mediaId = new List<Guid>();
+            if (employeeMedia.Images == null || employeeMedia.Images.Length == 0)
+                return;
 
-            // Lưu file vào server và lấy danh sách URL
-            if (employeeMedia.Images != null && employeeMedia.Images.Length > 0)
+            // 1. Lưu file => chỉ lấy file đầu tiên (vì chỉ 1 ảnh mỗi loại)
+            string mediaUrl = (await _fileService.SaveMediaFilesAsync(
+                employeeMedia.Images,
+                $"EmployeeMedia/{employeeMedia.MediaType}/{employeeMedia.EmployeeId}"
+            )).FirstOrDefault();
+
+            if (string.IsNullOrEmpty(mediaUrl))
+                return;
+
+            // 2. Kiểm tra media đã tồn tại chưa
+            var existingMedia = await _repository.GetEmployeeMediaIdByType(
+                employeeMedia.EmployeeId,
+                employeeMedia.MediaType
+            );
+
+            if (existingMedia != null)
             {
-                mediaUrls = await _fileService.SaveMediaFilesAsync(employeeMedia.Images, "EmployeeMedia/" + employeeMedia.MediaType.ToString());
-                mediaId.Add((await _repository.GetEmployeeMediaIdByType(employeeMedia.EmployeeId, employeeMedia.MediaType)).EmployeeMediaID);
-
+                // Update
+                existingMedia.MediaUrl = mediaUrl;
+                await _repository.UpdateAsync(existingMedia);
             }
-
-            // Tạo đối tượng EmployeeMedia để lưu vào DB
-            int count = 0;
-            foreach (string url in mediaUrls)
+            else
             {
-                
-                EmployeeMedia media = new EmployeeMedia
+                // Add mới
+                var newMedia = new EmployeeMedia
                 {
-                    EmployeeMediaID = mediaId[count],
+                    EmployeeMediaID = Guid.NewGuid(),
                     EmployeeID = employeeMedia.EmployeeId,
-                    MediaUrl = url,
-                    MediaType = employeeMedia.MediaType
+                    MediaType = employeeMedia.MediaType,
+                    MediaUrl = mediaUrl
                 };
-                await _repository.UpdateAsync(media);
-                count++;
+                await _repository.AddAsync(newMedia);
             }
-            
         }
+
 
         public async Task DeleteAsync(Guid id)
         {

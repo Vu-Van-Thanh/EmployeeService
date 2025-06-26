@@ -10,9 +10,11 @@ namespace EmployeeService.API.Controllers
     public class DynamicController : ControllerBase
     {
         private readonly string _connectionString;
-        public DynamicController(IConfiguration configuration)
+        private readonly IWebHostEnvironment _env;
+        public DynamicController(IConfiguration configuration, IWebHostEnvironment env)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _env = env;
         }
 
         // Endpoint để thực thi câu lệnh SQL động
@@ -32,6 +34,26 @@ namespace EmployeeService.API.Controllers
             {
                 return BadRequest($"Có lỗi xảy ra: {ex.Message}");
             }
+        }
+
+        [HttpGet("Statistic/{*subfolder}")]
+        public IActionResult GetFiles(string subfolder = "")
+        {
+            var rootPath = Path.Combine(_env.WebRootPath, subfolder ?? "");
+
+            if (!Directory.Exists(rootPath))
+                return NotFound("Thư mục không tồn tại.");
+
+            var files = Directory.GetFiles(rootPath, "*", SearchOption.AllDirectories)
+                .Select(path => new
+                {
+                    name = Path.GetFileName(path),
+                    fullPath = path.Replace(_env.WebRootPath, "").Replace("\\", "/"),
+                    modified = System.IO.File.GetLastWriteTime(path),
+                    size = new FileInfo(path).Length
+                }).ToList();
+
+            return Ok(files);
         }
     }
 }

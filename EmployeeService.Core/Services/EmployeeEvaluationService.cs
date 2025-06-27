@@ -48,7 +48,8 @@ namespace EmployeeService.Core.Services
                 PeriodId = evaluation.PeriodId,
                 EvaluationDate = evaluation.EvaluationDate,
                 TotalScore = evaluation.TotalScore,
-                DetailJson = evaluation.DetailJson
+                DetailJson = evaluation.DetailJson,
+                DetailJsonManager = evaluation.DetailJson
             };
 
             return await _evaluationRepository.AddEvaluation(result);

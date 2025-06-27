@@ -17,6 +17,7 @@ namespace EmployeeService.Core.Services
         Task<List<EmployeeEvaluationDTO>> GetAllEvaluations();
         Task<EmployeeEvaluationDTO?> GetEvaluationById(Guid id);
         Task<List<EmployeeEvaluationDTO>> GetEvaluationsByEmployeeId(Guid employeeId);
+        Task<List<EncryptEvaluationDTO>> GetEncryptEvaluationsByEmployee(Guid employeeId);
         Task<List<EmployeeEvaluationDTO>> GetEvaluationsByPeriodId(Guid periodId);
         Task<List<EmployeeEvaluationDTO>> GetEvaluationsByFilter(EmployeeEvaluationFilterDTO filter);
         Task<Guid> AddEvaluation(EmployeeEvaluationAddDTO evaluation);
@@ -192,6 +193,12 @@ namespace EmployeeService.Core.Services
             }
 
             return result;
+        }
+
+        public async Task<List<EncryptEvaluationDTO>> GetEncryptEvaluationsByEmployee(Guid employeeId)
+        {
+            var evaluations = await _evaluationRepository.GetEvaluationsByEmployeeId(employeeId);
+            return evaluations.Select(e => e.ToDTOEncrypt()).ToList();
         }
     }
 } 

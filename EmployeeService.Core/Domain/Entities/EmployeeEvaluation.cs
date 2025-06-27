@@ -22,6 +22,7 @@ namespace EmployeeService.Core.Domain.Entities
 
         public string DetailJson {get;set;}
         public string? DetailJsonManager { get; set; }
+        public string? Status { get; set; }
         [ForeignKey("EmployeeID")]
         public virtual Employee? Employee {get;set;}
 

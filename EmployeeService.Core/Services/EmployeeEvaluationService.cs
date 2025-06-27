@@ -115,7 +115,8 @@ namespace EmployeeService.Core.Services
                     EvaluationDate = evaluation.EvaluationDate,
                     TotalScore = evaluation.TotalScore,
                     DetailJson = evaluation.DetailJson,
-                    DetailJsonManager = evaluation.DetailJsonManager
+                    DetailJsonManager = evaluation.DetailJsonManager,
+                    Status = evaluation.Status
                 });
                 
                 return evaluation.ID;

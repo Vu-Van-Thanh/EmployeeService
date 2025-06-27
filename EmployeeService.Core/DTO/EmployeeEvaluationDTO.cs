@@ -20,6 +20,7 @@ namespace EmployeeService.Core.DTO
         public string? DetailJsonManager { get; set; }
         public string? EmployeeName { get; set; }
         public string? PeriodName { get; set; }
+        public string? Status { get; set; }
     }
 
     public class EncryptEvaluationDTO

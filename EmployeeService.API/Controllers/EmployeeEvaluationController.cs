@@ -58,6 +58,13 @@ namespace EmployeeService.API.Controllers
             return Ok(evaluations);
         }
 
+        [HttpGet("criterior/{employeeId}")]
+        public async Task<ActionResult<IEnumerable<EncryptEvaluationDTO>>> GetEvaluationsRelateBycriterior(Guid employeeId)
+        {
+            var evaluations = await _evaluationService.GetEncryptEvaluationsByCriterior(employeeId);
+            return Ok(evaluations);
+        }
+
         /// <summary>
         /// Get evaluations by period ID
         /// </summary>

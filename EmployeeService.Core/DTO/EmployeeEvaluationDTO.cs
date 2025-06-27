@@ -32,6 +32,8 @@ namespace EmployeeService.Core.DTO
         public string DetailJson { get; set; }
         public string DetailJsonManager { get; set; }
         public string? PeriodName { get; set; }
+        public string? EmployeeName { get; set; }
+        public string? EvaluatorName { get; set; }
     }
 
     public static class EmployeeEvaluationDTOExtensions

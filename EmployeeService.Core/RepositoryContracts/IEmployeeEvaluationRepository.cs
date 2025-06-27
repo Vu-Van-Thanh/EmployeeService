@@ -16,6 +16,7 @@ namespace EmployeeService.Core.RepositoryContracts
         Task<bool> DeleteEvaluation(Guid id);
         Task<List<EmployeeEvaluation>> GetAll();
         Task<List<EmployeeEvaluation>> GetEvaluationsByEmployeeId(Guid employeeId);
+        Task<List<EmployeeEvaluation>> GetEvaluationsByCriterior(Guid employeeId);
         Task<List<EmployeeEvaluation>> GetEvaluationsByPeriodId(Guid periodId);
         Task<List<EmployeeEvaluation>> GetEvaluationsByFilter(Expression<Func<EmployeeEvaluation, bool>> filter);
     }

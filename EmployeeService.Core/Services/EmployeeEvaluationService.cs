@@ -18,6 +18,7 @@ namespace EmployeeService.Core.Services
         Task<EmployeeEvaluationDTO?> GetEvaluationById(Guid id);
         Task<List<EmployeeEvaluationDTO>> GetEvaluationsByEmployeeId(Guid employeeId);
         Task<List<EncryptEvaluationDTO>> GetEncryptEvaluationsByEmployee(Guid employeeId);
+        Task<List<EncryptEvaluationDTO>> GetEncryptEvaluationsByCriterior(Guid employeeId);
         Task<List<EmployeeEvaluationDTO>> GetEvaluationsByPeriodId(Guid periodId);
         Task<List<EmployeeEvaluationDTO>> GetEvaluationsByFilter(EmployeeEvaluationFilterDTO filter);
         Task<Guid> AddEvaluation(EmployeeEvaluationAddDTO evaluation);
@@ -31,13 +32,15 @@ namespace EmployeeService.Core.Services
     {
         private readonly IEmployeeEvaluationRepository _evaluationRepository;
         private readonly IEvaluationCriterionRepository _criterionRepository;
-
+        private readonly IEmployeeRepository _employeeRepository;
         public EmployeeEvaluationService(
             IEmployeeEvaluationRepository evaluationRepository,
-            IEvaluationCriterionRepository criterionRepository)
+            IEvaluationCriterionRepository criterionRepository,
+            IEmployeeRepository employeeRepository)
         {
             _evaluationRepository = evaluationRepository;
             _criterionRepository = criterionRepository;
+            _employeeRepository = employeeRepository;
         }
 
         public async Task<Guid> AddEvaluation(EmployeeEvaluationAddDTO evaluation)
@@ -198,7 +201,43 @@ namespace EmployeeService.Core.Services
         public async Task<List<EncryptEvaluationDTO>> GetEncryptEvaluationsByEmployee(Guid employeeId)
         {
             var evaluations = await _evaluationRepository.GetEvaluationsByEmployeeId(employeeId);
-            return evaluations.Select(e => e.ToDTOEncrypt()).ToList();
+            var ToDTO  = evaluations.Select(e => e.ToDTOEncrypt()).ToList();
+            foreach(var evaluation in ToDTO)
+            {
+                var employee = await _employeeRepository.GetEmployeeById(evaluation.EmployeeID);
+                if (employee != null)
+                {
+                    evaluation.EmployeeName = $"{employee.FirstName} {employee.LastName}";
+                }
+
+                var evaluator = await _employeeRepository.GetEmployeeById(evaluation.EvaluatorId);
+                if (evaluator != null)
+                {
+                    evaluation.EvaluatorName = $"{evaluator.FirstName} {evaluator.LastName}";
+                }
+            }
+            return ToDTO;
+        }
+
+        public async  Task<List<EncryptEvaluationDTO>> GetEncryptEvaluationsByCriterior(Guid employeeId)
+        {
+            var evaluations = await _evaluationRepository.GetEvaluationsByCriterior(employeeId);
+            var ToDTO =  evaluations.Select(e => e.ToDTOEncrypt()).ToList();
+            foreach (var evaluation in ToDTO)
+            {
+                var employee = await _employeeRepository.GetEmployeeById(evaluation.EmployeeID);
+                if (employee != null)
+                {
+                    evaluation.EmployeeName = $"{employee.FirstName} {employee.LastName}";
+                }
+
+                var evaluator = await _employeeRepository.GetEmployeeById(evaluation.EvaluatorId);
+                if (evaluator != null)
+                {
+                    evaluation.EvaluatorName = $"{evaluator.FirstName} {evaluator.LastName}";
+                }
+            }
+            return ToDTO;
         }
     }
 } 

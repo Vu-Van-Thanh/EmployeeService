@@ -116,6 +116,8 @@ namespace EmployeeService.API.Controllers
             return Ok(employee);
         }
 
+        
+
         [HttpGet("profiles/{id}")]
         public async Task<ActionResult<EmployeeInfo>> GetUserProfile(string id)
         {

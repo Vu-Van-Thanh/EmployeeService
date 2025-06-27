@@ -61,6 +61,15 @@ namespace EmployeeService.Infrastructure.Repositories
                 .FirstOrDefaultAsync(e => e.ID == id);
         }
 
+        public async Task<List<EmployeeEvaluation>> GetEvaluationsByCriterior(Guid employeeId)
+        {
+            return await _context.EmployeeEvaluations
+                                .Include(e => e.Employee)
+                                .Include(e => e.Period)
+                                .Where(e => e.EvaluatorId == employeeId)
+                                .ToListAsync();
+        }
+
         public async Task<List<EmployeeEvaluation>> GetEvaluationsByEmployeeId(Guid employeeId)
         {
             return await _context.EmployeeEvaluations

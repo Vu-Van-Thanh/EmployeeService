@@ -17,6 +17,7 @@ namespace EmployeeService.Core.DTO
         public DateTime EvaluationDate { get; set; }
         public double TotalScore { get; set; }
         public string DetailJson { get; set; }
+        public string? DetailJsonManager { get; set; }
         public string? EmployeeName { get; set; }
         public string? PeriodName { get; set; }
     }

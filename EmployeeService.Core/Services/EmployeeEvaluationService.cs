@@ -114,7 +114,8 @@ namespace EmployeeService.Core.Services
                     PeriodId = evaluation.PeriodId,
                     EvaluationDate = evaluation.EvaluationDate,
                     TotalScore = evaluation.TotalScore,
-                    DetailJson = evaluation.DetailJson
+                    DetailJson = evaluation.DetailJson,
+                    DetailJsonManager = evaluation.DetailJsonManager
                 });
                 
                 return evaluation.ID;

@@ -111,11 +111,10 @@ namespace EmployeeService.API.Controllers
         /// <summary>
         /// Update an existing evaluation
         /// </summary>
-        [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateEvaluation(Guid id, [FromBody] EmployeeEvaluationDTO evaluation)
+        [HttpPut()]
+        public async Task<ActionResult> UpdateEvaluation( [FromBody] EmployeeEvaluationDTO evaluation)
         {
-            if (id != evaluation.ID)
-                return BadRequest("ID mismatch");
+          
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -126,7 +125,7 @@ namespace EmployeeService.API.Controllers
                 if (result == Guid.Empty)
                     return NotFound("Evaluation not found or update failed");
 
-                return Ok("Evaluation updated successfully");
+                return Ok(new { message = "Evaluation updated successfully" });
             }
             catch (Exception ex)
             {

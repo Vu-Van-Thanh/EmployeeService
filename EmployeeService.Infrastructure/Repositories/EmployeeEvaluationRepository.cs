@@ -112,6 +112,7 @@ namespace EmployeeService.Infrastructure.Repositories
             existing.TotalScore = evaluation.TotalScore;
             existing.DetailJson = evaluation.DetailJson;
             existing.DetailJsonManager = evaluation.DetailJsonManager;
+            existing.Status = evaluation.Status;te
 
             await _context.SaveChangesAsync();
             return existing.ID;

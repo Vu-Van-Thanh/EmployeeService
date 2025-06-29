@@ -115,29 +115,26 @@ namespace EmployeeService.Core.Services
                 DateTime issed = employee.DateIssued.Value;
 
 
-                if (issed.Year == currentYear)
+                if (employee.IsActived == true)
                 {
-                    if (employee.IsActived == true)
-                    {
 
-                        double years = (DateTime.Now - issed).TotalDays / 365;
+                    double years = (DateTime.Now - issed).TotalDays / 365;
 
-                        if (years > 10)
-                            result.seniorityEmployees.First(x => x.type == "Trên 10 năm").count++;
-                        else if (years > 5)
-                            result.seniorityEmployees.First(x => x.type == "5-10 năm").count++;
-                        else if (years > 3)
-                            result.seniorityEmployees.First(x => x.type == "3-5 năm").count++;
-                        else if (years > 1)
-                            result.seniorityEmployees.First(x => x.type == "1-3 năm").count++;
-                        else
-                            result.seniorityEmployees.First(x => x.type == "Dưới 1 năm").count++;
+                    if (years > 10)
+                        result.seniorityEmployees.First(x => x.type == "Trên 10 năm").count++;
+                    else if (years > 5)
+                        result.seniorityEmployees.First(x => x.type == "5-10 năm").count++;
+                    else if (years > 3)
+                        result.seniorityEmployees.First(x => x.type == "3-5 năm").count++;
+                    else if (years > 1)
+                        result.seniorityEmployees.First(x => x.type == "1-3 năm").count++;
+                    else
+                        result.seniorityEmployees.First(x => x.type == "Dưới 1 năm").count++;
 
 
-                    }
                 }
-               
-                
+
+
             }
             
             result.employeeGender = new EmployeeByGender

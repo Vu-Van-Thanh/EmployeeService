@@ -116,7 +116,22 @@ namespace EmployeeService.API.Controllers
             return Ok(employee);
         }
 
-        
+        [HttpGet("employeeName")]
+        public async Task<ActionResult<IEnumerable<EmployeeNameInfo>>> GetEmployeeByName()
+        {
+            EmployeeFilterDTO employeeFilter = new EmployeeFilterDTO();
+            List<EmployeeInfo> result1 = await _employeeService.GetEmployeeByFilter(employeeFilter);
+            List<EmployeeNameInfo> result = new List<EmployeeNameInfo>();
+            foreach (var employee in result1)
+            {
+                EmployeeNameInfo employeeNameInfo = new EmployeeNameInfo();
+                employeeNameInfo.Name = employee.FirstName + " " + employee.LastName;
+                employeeNameInfo.EmployeeId = employee.EmployeeID.ToString();
+                result.Add(employeeNameInfo);
+            }
+            return Ok(result);
+            
+        }
 
         [HttpGet("profiles/{id}")]
         public async Task<ActionResult<EmployeeInfo>> GetUserProfile(string id)
